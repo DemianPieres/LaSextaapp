@@ -1,0 +1,7 @@
+{
+  "name": "lasextaapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
