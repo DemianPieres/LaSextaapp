@@ -1,0 +1,50 @@
+/* ===== PÁGINA CON FONDO COMPARTIDO ===== */
+
+.page-with-shared-background {
+  --background: transparent;
+}
+
+/* Header Styles */
+.custom-header {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: white;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-toolbar {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: white;
+  backdrop-filter: blur(10px);
+}
+
+/* Content Styles */
+.page-content {
+  --background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.content-container {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  padding-bottom: 100px; /* Space for bottom navigation */
+  backdrop-filter: blur(2px);
+  color: white;
+  text-align: center;
+}
+
+.content-container h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ffeb3b;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.content-container p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}

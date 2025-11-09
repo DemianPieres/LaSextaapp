@@ -1,0 +1,169 @@
+/* ===== FONDO COMPARTIDO CON EFECTOS DE TRANSICIÓN ===== */
+
+.shared-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ===== CAPA DE FONDO PRINCIPAL ===== */
+
+.background-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.main-background {
+  z-index: 1;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/background.png');
+  background-size: cover;
+  background-position: left center; /* Alineado a la izquierda */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(0px);
+  opacity: 1;
+  transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
+  opacity: 0.8;
+  z-index: 2;
+}
+
+/* ===== EFECTO DE DESENFOQUE AL DESLIZAR ===== */
+
+.transition-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(0px);
+  opacity: 0;
+  z-index: 3;
+  transition: backdrop-filter 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.transition-overlay.active {
+  backdrop-filter: blur(15px);
+  opacity: 1;
+}
+
+/* ===== ANIMACIÓN DE DESENFOQUE EN EL FONDO ===== */
+
+.shared-background.transitioning .background-image {
+  filter: blur(8px);
+  opacity: 0.6;
+}
+
+/* ===== CONTENIDO DE LA APLICACIÓN ===== */
+
+.app-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ===== EFECTOS ESPECÍFICOS POR PÁGINA ===== */
+
+.shared-background.page-eventos .background-image {
+  background-position: left center;
+}
+
+.shared-background.page-mis-tickets .background-image {
+  background-position: left center;
+}
+
+.shared-background.page-beneficios .background-image {
+  background-position: left center;
+}
+
+.shared-background.page-puntos .background-image {
+  background-position: left center;
+}
+
+.shared-background.page-perfil .background-image {
+  background-position: left center;
+}
+
+/* ===== ANIMACIONES ADICIONALES ===== */
+
+@keyframes backgroundShift {
+  0% {
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  50% {
+    transform: scale(1.02);
+    filter: blur(4px);
+  }
+  100% {
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+.shared-background.transitioning .background-image {
+  animation: backgroundShift 0.6s ease-in-out;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+  .background-image {
+    background-attachment: scroll;
+    background-position: left center;
+  }
+  
+  .transition-overlay.active {
+    backdrop-filter: blur(10px);
+  }
+}
+
+@media (max-width: 480px) {
+  .background-image {
+    background-position: left center;
+  }
+  
+  .shared-background.transitioning .background-image {
+    filter: blur(6px);
+  }
+  
+  .transition-overlay.active {
+    backdrop-filter: blur(8px);
+  }
+}
+

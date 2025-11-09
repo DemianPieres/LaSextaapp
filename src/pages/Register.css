@@ -1,0 +1,417 @@
+/* ===== PANTALLA DE REGISTER - DISEÑO GLASSMORPHISM ===== */
+
+.auth-page {
+  --background: transparent;
+}
+
+.auth-content {
+  --background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== PARTÍCULAS DE FONDO ===== */
+
+.background-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: float 8s ease-in-out infinite;
+}
+
+.particle-1 {
+  width: 20px;
+  height: 20px;
+  background: rgba(34, 197, 94, 0.6); /* Verde claro */
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+  animation-duration: 10s;
+}
+
+.particle-2 {
+  width: 15px;
+  height: 15px;
+  background: rgba(22, 163, 74, 0.6); /* Verde medio */
+  top: 20%;
+  right: 20%;
+  animation-delay: 2s;
+  animation-duration: 8s;
+}
+
+.particle-3 {
+  width: 25px;
+  height: 25px;
+  background: rgba(16, 185, 129, 0.4); /* Verde esmeralda */
+  top: 60%;
+  left: 10%;
+  animation-delay: 4s;
+  animation-duration: 12s;
+}
+
+.particle-4 {
+  width: 18px;
+  height: 18px;
+  background: rgba(5, 150, 105, 0.5); /* Verde oscuro */
+  top: 70%;
+  right: 15%;
+  animation-delay: 1s;
+  animation-duration: 9s;
+}
+
+.particle-5 {
+  width: 12px;
+  height: 12px;
+  background: rgba(6, 182, 212, 0.7); /* Verde azulado */
+  top: 30%;
+  left: 80%;
+  animation-delay: 3s;
+  animation-duration: 7s;
+}
+
+.particle-6 {
+  width: 22px;
+  height: 22px;
+  background: rgba(4, 120, 87, 0.4); /* Verde muy oscuro */
+  top: 80%;
+  left: 70%;
+  animation-delay: 5s;
+  animation-duration: 11s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) translateX(-5px) rotate(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-30px) translateX(15px) rotate(270deg);
+    opacity: 0.7;
+  }
+}
+
+/* ===== TARJETA PRINCIPAL ===== */
+
+.auth-card {
+  position: relative;
+  z-index: 10;
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px 32px;
+  margin: 20px;
+  margin-top: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== HEADER DE AUTENTICACIÓN ===== */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.auth-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ===== FORMULARIO ===== */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(40, 40, 40, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 16px;
+  min-height: 48px;
+}
+
+.input-icon {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  margin-right: 12px;
+  z-index: 2;
+}
+
+.password-toggle {
+  cursor: pointer;
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.password-toggle:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.auth-input {
+  flex: 1;
+  --background: transparent;
+  --color: white;
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ===== INDICADOR DE FORTALEZA DE CONTRASEÑA ===== */
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-text {
+  font-size: 12px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-width: 50px;
+}
+
+/* ===== BOTÓN PRINCIPAL ===== */
+
+.auth-button {
+  margin-top: 8px;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.primary-button {
+  --background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+  --color: white !important;
+  --border-radius: 12px !important;
+  --box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3) !important;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+}
+
+.primary-button:hover {
+  --box-shadow: 0 12px 25px rgba(34, 197, 94, 0.4) !important;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+}
+
+/* ===== SEPARADOR ===== */
+
+.auth-separator {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  gap: 16px;
+}
+
+.separator-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.separator-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+}
+
+/* ===== BOTONES SOCIALES ===== */
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.social-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(40, 40, 40, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-button:hover {
+  background: rgba(60, 60, 60, 0.8);
+  transform: translateY(-2px);
+}
+
+/* Estilos unificados para todos los iconos sociales */
+.social-button svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.social-button:hover svg {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.google-button:hover {
+  background: rgba(66, 133, 244, 0.1);
+  border-color: rgba(66, 133, 244, 0.3);
+}
+
+.instagram-button:hover {
+  background: rgba(225, 48, 108, 0.1);
+  border-color: rgba(225, 48, 108, 0.3);
+}
+
+.facebook-button:hover {
+  background: rgba(24, 119, 242, 0.1);
+  border-color: rgba(24, 119, 242, 0.3);
+}
+
+/* ===== ENLACES DE NAVEGACIÓN ===== */
+
+.auth-link {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.auth-link-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+}
+
+.auth-link-button {
+  color: #22c55e; /* Verde claro */
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 4px;
+  transition: color 0.3s ease;
+}
+
+.auth-link-button:hover {
+  color: #16a34a; /* Verde más oscuro */
+  text-decoration: underline;
+}
+
+.register-helper-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 480px) {
+  .auth-card {
+    margin: 16px;
+    margin-top: 20px;
+    padding: 32px 24px;
+  }
+  
+  .auth-title {
+    font-size: 28px;
+  }
+  
+  .particle {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-card {
+    margin: 12px;
+    padding: 24px 20px;
+  }
+  
+  .auth-title {
+    font-size: 24px;
+  }
+  
+  .auth-subtitle {
+    font-size: 14px;
+  }
+}

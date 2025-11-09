@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- Splash Screen Theme usando SplashScreen API moderna (API 31+) -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Fondo blanco -->
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <!-- Logo centrado -->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/logosexta</item>
+        <!-- Duración de la animación del logo (en ms) -->
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+        <!-- Color del ícono si es vectorial -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
+        <!-- Branding opcional -->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/logosexta</item>
+        <!-- Configuraciones AppCompat -->
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    
+    <!-- Tema legacy para versiones anteriores a API 31 -->
+    <style name="AppTheme.NoActionBarLaunch.Legacy" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_logo</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>

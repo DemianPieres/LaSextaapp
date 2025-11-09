@@ -1,0 +1,325 @@
+/* ===== PÁGINA CON FONDO COMPARTIDO ===== */
+
+.page-with-shared-background {
+  --background: transparent;
+}
+
+/* Header Styles */
+.custom-header {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: white;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-toolbar {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: white;
+  backdrop-filter: blur(10px);
+}
+
+/* Content Styles */
+.page-content {
+  --background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.tickets-wrapper {
+  position: relative;
+  z-index: 2;
+  padding: 24px 20px 120px;
+  color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tickets-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+}
+
+.tickets-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #ffeb3b;
+  backdrop-filter: blur(8px);
+}
+
+.tickets-heading h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #ffffff;
+}
+
+.tickets-heading p {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 12px;
+  letter-spacing: 0.4px;
+}
+
+.ticket-card {
+  --background: rgba(22, 22, 24, 0.88);
+  --color: #f5f5f5;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.ticket-card--compact {
+  cursor: default;
+}
+
+.ticket-card--active {
+  border-color: rgba(123, 255, 160, 0.22);
+  box-shadow: 0 18px 40px rgba(67, 255, 154, 0.18);
+}
+
+.ticket-card--used {
+  border-color: rgba(255, 92, 92, 0.15);
+  box-shadow: 0 12px 30px rgba(255, 72, 72, 0.12);
+  opacity: 0.9;
+}
+
+.ticket-card:hover.ticket-card--active {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 55px rgba(67, 255, 154, 0.22);
+}
+
+.ticket-card ion-card-header {
+  padding-bottom: 4px;
+}
+
+.ticket-card ion-card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ticket-card ion-card-subtitle {
+  font-size: 13px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ticket-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ticket-id {
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+}
+
+.ticket-description {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.ticket-description--muted {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ticket-dates {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ticket-dates span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-dates ion-icon {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.qr-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 12px, rgba(0, 0, 0, 0.12) 12px, rgba(0, 0, 0, 0.12) 24px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 64px;
+  margin-bottom: 12px;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.qr-placeholder--disabled {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.qr-placeholder--modal {
+  max-width: 320px;
+  width: 100%;
+  margin: 0 auto 24px;
+  border-width: 2px;
+  font-size: 80px;
+}
+
+.empty-state {
+  background: rgba(22, 22, 24, 0.75);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  padding: 40px 24px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.empty-state__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.empty-state h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.history-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ticket-modal {
+  --background: rgba(10, 10, 12, 0.96);
+  --border-radius: 24px;
+  backdrop-filter: blur(18px);
+}
+
+.modal-header {
+  --background: transparent;
+  --color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.modal-header ion-toolbar {
+  --background: rgba(14, 14, 16, 0.92);
+  --color: #ffffff;
+}
+
+.modal-header ion-button {
+  color: #ffffff;
+}
+
+.modal-content {
+  --background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-body {
+  width: min(480px, 90vw);
+  margin: 40px auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.modal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-details .ticket-dates {
+  margin: 0;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .tickets-wrapper {
+    padding: 32px 40px 140px;
+  }
+
+  .tickets-header {
+    gap: 24px;
+  }
+
+  .tickets-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .tickets-heading h1 {
+    font-size: 28px;
+  }
+
+  .tickets-heading p {
+    font-size: 16px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .ticket-card ion-card-title {
+    font-size: 22px;
+  }
+}

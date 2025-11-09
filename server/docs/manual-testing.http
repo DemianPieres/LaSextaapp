@@ -1,0 +1,89 @@
+### Variables de entorno (actualizá según tus respuestas)
+@baseUrl = http://localhost:4000/api
+@clientEmail = cliente-demo@example.com
+@clientPassword = Demo123!
+@clientName = Cliente Demo
+@adminEmail = admin@example.com
+@adminPassword = Admin123!
+@clientToken = {{clientLogin.response.body.token}}
+@adminToken = {{adminLogin.response.body.token}}
+@clientId = {{clientLogin.response.body.user.id}}
+@ticketId = 
+@ticketCode = 
+
+### Registro de usuario cliente
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{clientEmail}}",
+  "password": "{{clientPassword}}",
+  "nombre": "{{clientName}}"
+}
+
+### Login de usuario cliente
+# @name clientLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{clientEmail}}",
+  "password": "{{clientPassword}}"
+}
+
+### Perfil del usuario autenticado
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{clientToken}}
+
+### Tickets activos del usuario (usar el ID devuelto en el login/registro)
+GET {{baseUrl}}/tickets/users/{{clientId}}/active
+Authorization: Bearer {{clientToken}}
+
+### Historial de tickets del usuario
+GET {{baseUrl}}/tickets/users/{{clientId}}/history
+Authorization: Bearer {{clientToken}}
+
+### Login de administrador
+# @name adminLogin
+POST {{baseUrl}}/admin/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Perfil del administrador autenticado
+GET {{baseUrl}}/admin/me
+Authorization: Bearer {{adminToken}}
+
+### Listado de usuarios (excluye administradores)
+GET {{baseUrl}}/admin/users
+Authorization: Bearer {{adminToken}}
+
+### Generar ticket para el usuario cliente (ajusta diasValidez según necesidad)
+# @name adminGenerateTicket
+POST {{baseUrl}}/admin/tickets/generate
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "userId": "{{clientId}}",
+  "diasValidez": 7
+}
+
+### Enviar el ticket generado por email
+POST {{baseUrl}}/admin/tickets/send/{{clientId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "ticketId": "{{$json adminGenerateTicket.response.body.ticket.id}}"
+}
+
+### Validar (consumir) un ticket por código QR
+POST {{baseUrl}}/admin/tickets/validate/{{ticketCode}}
+Authorization: Bearer {{adminToken}}
+
+
+
