@@ -26,7 +26,7 @@ import './Perfil.css';
 const Perfil: React.FC = () => {
   const { session, logout } = useAuth();
   const profile = useMemo(() => session?.profile ?? null, [session]);
-  const token = session?.type === 'client' ? session.token : null;
+  const token = session?.type === 'user' ? session.token : null;
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [points, setPoints] = useState<number>(0);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);

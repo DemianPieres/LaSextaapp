@@ -11,7 +11,7 @@ const MIN_POINTS_TO_REDEEM = 25;
 const Puntos: React.FC = () => {
   const { session } = useAuth();
   const [presentToast] = useIonToast();
-  const token = session?.type === 'client' ? session.token : null;
+  const token = session?.type === 'user' ? session.token : null;
 
   const [points, setPoints] = useState<number>(0);
   const [movements, setMovements] = useState<PointsMovement[]>([]);

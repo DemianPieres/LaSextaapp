@@ -84,7 +84,7 @@ export async function deleteAdminEvent(token: string, eventId: string): Promise<
 
 export function subscribeToEventStream(
   onMessage: (message: EventStreamMessage) => void,
-  onError?: (event: MessageEvent) => void
+  onError?: (event: Event) => void
 ): EventSource {
   const url = resolveApiUrl('/events/stream');
   const eventSource = new EventSource(url);
