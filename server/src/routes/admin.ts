@@ -8,6 +8,8 @@ import { signAdminToken } from '../utils/jwt.js';
 import { verifyPassword } from '../utils/password.js';
 import { computeExpirationDate, generateTicketCode } from '../utils/tickets.js';
 import { adminEventsRouter } from './events.js';
+import { adminBenefitsRouter } from './benefits.js';
+import { adminPointsRouter } from './points.js';
 
 type UserDocument = {
   _id: ObjectId;
@@ -89,6 +91,8 @@ adminRouter.post(
 adminRouter.use(requireAdminAuth);
 
 adminRouter.use('/events', adminEventsRouter);
+adminRouter.use('/benefits', adminBenefitsRouter);
+adminRouter.use('/points', adminPointsRouter);
 
 adminRouter.get(
   '/me',

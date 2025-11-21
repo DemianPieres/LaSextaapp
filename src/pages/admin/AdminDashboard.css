@@ -102,5 +102,93 @@
   }
 }
 
+/* ===== BENEFITS ADMIN STYLES ===== */
 
+.admin-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-benefit-card {
+  background: rgba(40, 40, 45, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-benefit-main {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-benefit-logo {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-benefit-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.admin-benefit-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-benefit-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.admin-benefit-short {
+  font-size: 15px;
+  color: #FFC107;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.admin-benefit-sponsor {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 12px 0;
+}
+
+.admin-benefit-sponsor strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-benefit-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .admin-benefit-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-benefit-actions {
+    flex-shrink: 0;
+  }
+}
 

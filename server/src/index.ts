@@ -8,6 +8,8 @@ import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { ticketsRouter } from './routes/tickets.js';
 import { eventsRouter } from './routes/events.js';
+import { benefitsRouter } from './routes/benefits.js';
+import { pointsRouter } from './routes/points.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -47,6 +49,8 @@ async function bootstrap(): Promise<void> {
 
   app.use('/api/tickets', ticketsRouter);
   app.use('/api/events', eventsRouter);
+  app.use('/api/benefits', benefitsRouter);
+  app.use('/api/points', pointsRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/admin', adminRouter);
 

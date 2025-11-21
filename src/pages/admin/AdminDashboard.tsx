@@ -38,6 +38,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   addOutline,
   calendarOutline,
+  giftOutline,
   logOutOutline,
   mailOutline,
   refreshOutline,
@@ -63,6 +64,13 @@ import {
   type EventDto,
   type EventStreamMessage,
 } from '../../api/events';
+import {
+  createAdminBenefit,
+  deleteAdminBenefit,
+  fetchAdminBenefits,
+  updateAdminBenefit,
+  type BenefitDto,
+} from '../../api/benefits';
 import EventCard from '../../components/EventCard';
 import { useAuth } from '../../context/AuthContext';
 import './AdminDashboard.css';
@@ -83,6 +91,15 @@ type EventFormState = {
   linkCompra: string;
 };
 
+type BenefitFormState = {
+  titulo: string;
+  descripcionCorta: string;
+  descripcionCompleta: string;
+  logoUrl: string;
+  nombreAuspiciante: string;
+  activo: boolean;
+};
+
 const DEFAULT_EVENT_FORM_STATE: EventFormState = {
   titulo: '',
   fecha: '',
@@ -92,6 +109,15 @@ const DEFAULT_EVENT_FORM_STATE: EventFormState = {
   descripcion: '',
   imagenFondo: '',
   linkCompra: '',
+};
+
+const DEFAULT_BENEFIT_FORM_STATE: BenefitFormState = {
+  titulo: '',
+  descripcionCorta: '',
+  descripcionCompleta: '',
+  logoUrl: '',
+  nombreAuspiciante: '',
+  activo: true,
 };
 
 const sortEvents = (events: EventDto[]): EventDto[] =>
@@ -129,7 +155,7 @@ const AdminDashboard: React.FC = () => {
     diasValidez: 7,
   });
 
-  const [activeSection, setActiveSection] = useState<'tickets' | 'events'>('tickets');
+  const [activeSection, setActiveSection] = useState<'tickets' | 'events' | 'benefits'>('tickets');
   const [events, setEvents] = useState<EventDto[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [eventsError, setEventsError] = useState<string | null>(null);
@@ -143,6 +169,16 @@ const AdminDashboard: React.FC = () => {
   const [validationCode, setValidationCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+
+  const [benefits, setBenefits] = useState<BenefitDto[]>([]);
+  const [benefitsLoading, setBenefitsLoading] = useState(false);
+  const [benefitsError, setBenefitsError] = useState<string | null>(null);
+  const [benefitFormState, setBenefitFormState] = useState<BenefitFormState>(DEFAULT_BENEFIT_FORM_STATE);
+  const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
+  const [editingBenefitId, setEditingBenefitId] = useState<string | null>(null);
+  const [isSavingBenefit, setIsSavingBenefit] = useState(false);
+  const [deletingBenefitId, setDeletingBenefitId] = useState<string | null>(null);
+  const [benefitToDelete, setBenefitToDelete] = useState<BenefitDto | null>(null);
 
   const activeTickets = useMemo(
     () => tickets.filter((ticket) => ticket.estado === 'valido'),
@@ -217,6 +253,22 @@ const AdminDashboard: React.FC = () => {
     }
   }, [adminToken, showToast]);
 
+  const loadBenefits = useCallback(async () => {
+    if (!adminToken) return;
+    setBenefitsLoading(true);
+    try {
+      const data = await fetchAdminBenefits(adminToken);
+      setBenefits(data);
+      setBenefitsError(null);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudieron cargar los beneficios.');
+      setBenefitsError(message);
+      showToast(message, 'danger');
+    } finally {
+      setBenefitsLoading(false);
+    }
+  }, [adminToken, showToast]);
+
   const handleEventStreamMessage = useCallback((message: EventStreamMessage) => {
     switch (message.type) {
       case 'snapshot':
@@ -265,6 +317,14 @@ const AdminDashboard: React.FC = () => {
       setEvents([]);
     }
   }, [adminToken, loadEvents]);
+
+  useEffect(() => {
+    if (adminToken) {
+      void loadBenefits();
+    } else {
+      setBenefits([]);
+    }
+  }, [adminToken, loadBenefits]);
 
   useEffect(() => {
     if (!adminToken) {
@@ -409,6 +469,88 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleOpenCreateBenefit = () => {
+    setEditingBenefitId(null);
+    setBenefitFormState(DEFAULT_BENEFIT_FORM_STATE);
+    setIsBenefitModalOpen(true);
+  };
+
+  const handleEditBenefit = (benefit: BenefitDto) => {
+    setEditingBenefitId(benefit.id);
+    setBenefitFormState({
+      titulo: benefit.titulo,
+      descripcionCorta: benefit.descripcionCorta,
+      descripcionCompleta: benefit.descripcionCompleta,
+      logoUrl: benefit.logoUrl,
+      nombreAuspiciante: benefit.nombreAuspiciante,
+      activo: benefit.activo,
+    });
+    setIsBenefitModalOpen(true);
+  };
+
+  const handleCloseBenefitModal = () => {
+    setIsBenefitModalOpen(false);
+    setEditingBenefitId(null);
+    setBenefitFormState(DEFAULT_BENEFIT_FORM_STATE);
+  };
+
+  const handleSubmitBenefit = async () => {
+    if (!adminToken) return;
+
+    const trimmedTitulo = benefitFormState.titulo.trim();
+    const trimmedDescCorta = benefitFormState.descripcionCorta.trim();
+    const trimmedDescCompleta = benefitFormState.descripcionCompleta.trim();
+    const trimmedLogoUrl = benefitFormState.logoUrl.trim();
+    const trimmedNombreAuspiciante = benefitFormState.nombreAuspiciante.trim();
+
+    if (!trimmedTitulo || !trimmedDescCorta || !trimmedDescCompleta || !trimmedLogoUrl || !trimmedNombreAuspiciante) {
+      showToast('Completá todos los campos para guardar el beneficio.', 'warning');
+      return;
+    }
+
+    const payload = {
+      titulo: trimmedTitulo,
+      descripcionCorta: trimmedDescCorta,
+      descripcionCompleta: trimmedDescCompleta,
+      logoUrl: trimmedLogoUrl,
+      nombreAuspiciante: trimmedNombreAuspiciante,
+      activo: benefitFormState.activo,
+    };
+
+    setIsSavingBenefit(true);
+    try {
+      if (editingBenefitId) {
+        await updateAdminBenefit(adminToken, editingBenefitId, payload);
+        showToast('Beneficio actualizado correctamente.');
+      } else {
+        await createAdminBenefit(adminToken, payload);
+        showToast('Beneficio creado correctamente.');
+      }
+      handleCloseBenefitModal();
+      await loadBenefits();
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudo guardar el beneficio. Intenta nuevamente.');
+      showToast(message, 'danger');
+    } finally {
+      setIsSavingBenefit(false);
+    }
+  };
+
+  const handleDeleteBenefit = async (benefitId: string) => {
+    if (!adminToken) return;
+    setDeletingBenefitId(benefitId);
+    try {
+      await deleteAdminBenefit(adminToken, benefitId);
+      showToast('Beneficio eliminado correctamente.');
+      await loadBenefits();
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudo eliminar el beneficio.');
+      showToast(message, 'danger');
+    } finally {
+      setDeletingBenefitId(null);
+    }
+  };
+
   const handleValidateCode = async (code: string) => {
     if (!adminToken) return;
     setIsValidating(true);
@@ -482,14 +624,18 @@ const AdminDashboard: React.FC = () => {
         <div className="tickets-wrapper">
           <header className="tickets-header">
             <div className="tickets-icon">
-              <IonIcon icon={activeSection === 'tickets' ? ticketOutline : calendarOutline} />
+              <IonIcon icon={activeSection === 'tickets' ? ticketOutline : activeSection === 'events' ? calendarOutline : giftOutline} />
             </div>
             <div className="tickets-heading">
-              <h1>{activeSection === 'tickets' ? 'Gestión de Tickets' : 'Gestión de Eventos'}</h1>
+              <h1>
+                {activeSection === 'tickets' ? 'Gestión de Tickets' : activeSection === 'events' ? 'Gestión de Eventos' : 'Gestión de Beneficios'}
+              </h1>
               <p>
                 {activeSection === 'tickets'
                   ? 'Emití, enviá y validá códigos QR en tiempo real. Todos los cambios se reflejan automáticamente en los usuarios.'
-                  : 'Creá, editá y eliminá eventos. Los usuarios verán las actualizaciones al instante sin recargar la app.'}
+                  : activeSection === 'events'
+                  ? 'Creá, editá y eliminá eventos. Los usuarios verán las actualizaciones al instante sin recargar la app.'
+                  : 'Creá, editá y eliminá beneficios con descuentos exclusivos para los usuarios.'}
               </p>
             </div>
           </header>
@@ -497,7 +643,7 @@ const AdminDashboard: React.FC = () => {
           <IonSegment
             value={activeSection}
             onIonChange={(event) => {
-              const value = (event.detail.value as 'tickets' | 'events') ?? 'tickets';
+              const value = (event.detail.value as 'tickets' | 'events' | 'benefits') ?? 'tickets';
               setActiveSection(value);
             }}
             className="admin-section-segment"
@@ -507,6 +653,9 @@ const AdminDashboard: React.FC = () => {
             </IonSegmentButton>
             <IonSegmentButton value="events">
               <IonLabel>Eventos</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="benefits">
+              <IonLabel>Beneficios</IonLabel>
             </IonSegmentButton>
           </IonSegment>
 
@@ -740,7 +889,7 @@ const AdminDashboard: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-          ) : (
+          ) : activeSection === 'events' ? (
             <section className="admin-events-container">
               <div className="admin-events-toolbar">
                 <div>
@@ -791,7 +940,84 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </section>
-          )}
+          ) : activeSection === 'benefits' ? (
+            <section className="admin-events-container">
+              <div className="admin-events-toolbar">
+                <div>
+                  <h2>Beneficios publicados</h2>
+                  <p>
+                    Publicá y administrá los beneficios que ven los clientes. Los cambios se reflejan de inmediato en la app.
+                  </p>
+                </div>
+                <div className="admin-events-actions">
+                  <IonButton onClick={handleOpenCreateBenefit}>
+                    <IonIcon icon={addOutline} slot="start" />
+                    Nuevo beneficio
+                  </IonButton>
+                  <IonButton color="medium" onClick={() => void loadBenefits()} disabled={benefitsLoading}>
+                    <IonIcon icon={refreshOutline} slot="start" />
+                    Actualizar
+                  </IonButton>
+                </div>
+              </div>
+
+              {benefitsLoading ? (
+                <div className="admin-events-feedback">
+                  <IonSpinner />
+                  <IonText>Cargando beneficios...</IonText>
+                </div>
+              ) : benefitsError ? (
+                <div className="admin-events-feedback">
+                  <IonText color="danger">{benefitsError}</IonText>
+                </div>
+              ) : benefits.length === 0 ? (
+                <div className="admin-events-feedback">
+                  <IonText color="medium">
+                    No hay beneficios publicados todavía. Creá el primero para que los clientes lo vean en la app.
+                  </IonText>
+                </div>
+              ) : (
+                <div className="admin-benefits-list">
+                  {benefits.map((benefit) => (
+                    <div key={benefit.id} className="admin-benefit-card">
+                      <div className="admin-benefit-main">
+                        <div className="admin-benefit-logo">
+                          <img src={benefit.logoUrl} alt={benefit.nombreAuspiciante} />
+                        </div>
+                        <div className="admin-benefit-content">
+                          <h3>{benefit.titulo}</h3>
+                          <p className="admin-benefit-short">{benefit.descripcionCorta}</p>
+                          <p className="admin-benefit-sponsor">
+                            <strong>Auspiciante:</strong> {benefit.nombreAuspiciante}
+                          </p>
+                          <IonBadge color={benefit.activo ? 'success' : 'medium'}>
+                            {benefit.activo ? 'Activo' : 'Inactivo'}
+                          </IonBadge>
+                        </div>
+                      </div>
+                      <div className="admin-benefit-actions">
+                        <IonButton
+                          size="small"
+                          color="tertiary"
+                          onClick={() => handleEditBenefit(benefit)}
+                        >
+                          Editar
+                        </IonButton>
+                        <IonButton
+                          size="small"
+                          color="danger"
+                          onClick={() => setBenefitToDelete(benefit)}
+                          disabled={deletingBenefitId === benefit.id}
+                        >
+                          {deletingBenefitId === benefit.id ? 'Eliminando...' : 'Eliminar'}
+                        </IonButton>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          ) : null}
         </div>
 
         <IonModal
@@ -995,6 +1221,136 @@ const AdminDashboard: React.FC = () => {
             },
           ]}
           onDidDismiss={() => setEventToDelete(null)}
+        />
+
+        <IonModal isOpen={isBenefitModalOpen} onDidDismiss={handleCloseBenefitModal}>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>{editingBenefitId ? 'Editar beneficio' : 'Nuevo beneficio'}</IonTitle>
+              <IonButton slot="end" fill="clear" onClick={handleCloseBenefitModal}>
+                Cerrar
+              </IonButton>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <IonList lines="full">
+              <IonItem>
+                <IonLabel position="stacked">Título</IonLabel>
+                <IonInput
+                  value={benefitFormState.titulo}
+                  placeholder="Ej: 10% de descuento"
+                  onIonChange={(event) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      titulo: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Descripción corta</IonLabel>
+                <IonInput
+                  value={benefitFormState.descripcionCorta}
+                  placeholder="Ej: en todas las consumiciones"
+                  onIonChange={(event) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      descripcionCorta: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Descripción completa</IonLabel>
+                <IonTextarea
+                  value={benefitFormState.descripcionCompleta}
+                  autoGrow
+                  placeholder="Descripción detallada del beneficio que se mostrará al expandir la card"
+                  onIonChange={(event) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      descripcionCompleta: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Logo URL</IonLabel>
+                <IonInput
+                  value={benefitFormState.logoUrl}
+                  placeholder="https://... o /logo.png"
+                  onIonChange={(event) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      logoUrl: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Nombre del auspiciante</IonLabel>
+                <IonInput
+                  value={benefitFormState.nombreAuspiciante}
+                  placeholder="Ej: Coca Cola"
+                  onIonChange={(event) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      nombreAuspiciante: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel>Activo</IonLabel>
+                <input
+                  type="checkbox"
+                  checked={benefitFormState.activo}
+                  onChange={(e) =>
+                    setBenefitFormState((prev) => ({
+                      ...prev,
+                      activo: e.target.checked,
+                    }))
+                  }
+                  style={{ marginLeft: 'auto' }}
+                />
+              </IonItem>
+            </IonList>
+            <IonButton
+              expand="block"
+              style={{ marginTop: '24px' }}
+              onClick={handleSubmitBenefit}
+              disabled={isSavingBenefit}
+            >
+              {isSavingBenefit
+                ? 'Guardando...'
+                : editingBenefitId
+                ? 'Actualizar beneficio'
+                : 'Crear beneficio'}
+            </IonButton>
+          </IonContent>
+        </IonModal>
+
+        <IonAlert
+          isOpen={benefitToDelete !== null}
+          header="Eliminar beneficio"
+          message={`¿Seguro que querés eliminar "${benefitToDelete?.titulo}"? Esta acción no se puede deshacer.`}
+          buttons={[
+            {
+              text: 'Cancelar',
+              role: 'cancel',
+            },
+            {
+              text: 'Eliminar',
+              role: 'destructive',
+              handler: () => {
+                const benefitId = benefitToDelete?.id;
+                if (benefitId) {
+                  void handleDeleteBenefit(benefitId);
+                }
+              },
+            },
+          ]}
+          onDidDismiss={() => setBenefitToDelete(null)}
         />
       </IonContent>
     </IonPage>

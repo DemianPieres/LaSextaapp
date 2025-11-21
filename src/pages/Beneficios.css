@@ -25,26 +25,232 @@
   overflow: hidden;
 }
 
-.content-container {
+/* ===== BENEFICIOS CONTAINER ===== */
+
+.beneficios-container {
   position: relative;
   z-index: 2;
-  padding: 20px;
-  padding-bottom: 100px; /* Space for bottom navigation */
-  backdrop-filter: blur(2px);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+}
+
+/* ===== HEADER ===== */
+
+.beneficios-header {
+  padding: 32px 24px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+}
+
+.beneficios-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #FFC107, #FF9800);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.4);
+}
+
+.beneficios-icon ion-icon {
+  font-size: 32px;
   color: white;
-  text-align: center;
 }
 
-.content-container h2 {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #ffeb3b;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+.beneficios-heading h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 4px 0;
 }
 
-.content-container p {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
+.beneficios-heading p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* ===== CONTENT ===== */
+
+.beneficios-content {
+  flex: 1;
+  padding: 0 24px 24px;
+}
+
+.beneficios-loading,
+.beneficios-error,
+.beneficios-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.beneficios-empty-icon {
+  font-size: 64px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== LISTA DE BENEFICIOS ===== */
+
+.beneficios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== CARD DE BENEFICIO ===== */
+
+.beneficio-card {
+  background: rgba(40, 40, 45, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.beneficio-card:active {
+  transform: scale(0.98);
+}
+
+.beneficio-card.expanded {
+  background: rgba(50, 50, 55, 0.98);
+  border-color: rgba(255, 193, 7, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.beneficio-card-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.beneficio-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.beneficio-titulo {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.beneficio-descripcion-corta {
+  font-size: 15px;
+  color: #FFC107;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.beneficio-descripcion-completa {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 12px 0 0 0;
   line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.beneficio-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.beneficio-logo-wrapper {
+  width: 70px;
+  height: 70px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.beneficio-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.beneficio-expand-icon {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.beneficio-card.expanded .beneficio-expand-icon {
+  color: #FFC107;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 480px) {
+  .beneficios-header {
+    padding: 28px 20px 20px;
+  }
+
+  .beneficios-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .beneficios-icon ion-icon {
+    font-size: 28px;
+  }
+
+  .beneficios-heading h1 {
+    font-size: 22px;
+  }
+
+  .beneficios-content {
+    padding: 0 20px 20px;
+  }
+
+  .beneficio-card {
+    padding: 16px;
+  }
+
+  .beneficio-titulo {
+    font-size: 16px;
+  }
+
+  .beneficio-descripcion-corta {
+    font-size: 14px;
+  }
+
+  .beneficio-logo-wrapper {
+    width: 60px;
+    height: 60px;
+  }
 }
