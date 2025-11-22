@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
 import { IonButton, IonContent, IonIcon, IonInput, IonPage, IonText, IonToast } from '@ionic/react';
-import { eye, eyeOff, key, mail } from 'ionicons/icons';
+import { eye, eyeOff, key, mail, arrowBack, checkmarkCircle } from 'ionicons/icons';
 import './Login.css';
 import { useAuth } from '../context/AuthContext';
+import { requestPasswordReset, verifyResetCode, resetPassword } from '../api/auth';
+
+type ResetStep = 'email' | 'code' | 'newPassword' | 'success';
 
 const Login: React.FC = () => {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  // Estados para recuperación de contraseña
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetStep, setResetStep] = useState<ResetStep>('email');
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [isResetLoading, setIsResetLoading] = useState(false);
+  const [resetErrorMessage, setResetErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -34,6 +48,97 @@ const Login: React.FC = () => {
 
   const isFormValid = email.trim() !== '' && password.trim().length >= 6;
 
+  const handleForgotPassword = () => {
+    setShowResetModal(true);
+    setResetStep('email');
+    setResetEmail('');
+    setResetCode('');
+    setNewPassword('');
+    setResetErrorMessage('');
+    setSuccessMessage('');
+  };
+
+  const handleCloseResetModal = () => {
+    setShowResetModal(false);
+    setResetStep('email');
+    setResetEmail('');
+    setResetCode('');
+    setNewPassword('');
+    setResetErrorMessage('');
+    setSuccessMessage('');
+  };
+
+  const handleRequestResetCode = async () => {
+    if (resetEmail.trim() === '') {
+      setResetErrorMessage('Por favor, ingresá tu email.');
+      return;
+    }
+
+    try {
+      setIsResetLoading(true);
+      setResetErrorMessage('');
+      await requestPasswordReset(resetEmail);
+      setSuccessMessage('Si el email existe, se envió un código de recuperación.');
+      setResetStep('code');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string' && error.message !== ''
+          ? error.message
+          : 'No se pudo enviar el código. Intentá nuevamente.';
+      setResetErrorMessage(message);
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (resetCode.trim() === '' || resetCode.length !== 6) {
+      setResetErrorMessage('Por favor, ingresá el código de 6 dígitos.');
+      return;
+    }
+
+    try {
+      setIsResetLoading(true);
+      setResetErrorMessage('');
+      await verifyResetCode(resetEmail, resetCode);
+      setResetStep('newPassword');
+      setSuccessMessage('Código verificado correctamente.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string' && error.message !== ''
+          ? error.message
+          : 'Código inválido o expirado.';
+      setResetErrorMessage(message);
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (newPassword.trim().length < 6) {
+      setResetErrorMessage('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    try {
+      setIsResetLoading(true);
+      setResetErrorMessage('');
+      await resetPassword(resetEmail, resetCode, newPassword);
+      setResetStep('success');
+      setSuccessMessage('Contraseña restablecida exitosamente.');
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string' && error.message !== ''
+          ? error.message
+          : 'No se pudo restablecer la contraseña. Intentá nuevamente.';
+      setResetErrorMessage(message);
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
   return (
     <IonPage className="auth-page">
       <IonContent fullscreen className="auth-content">
@@ -52,7 +157,7 @@ const Login: React.FC = () => {
           {/* Logo centrado */}
           <div className="logo-section">
             <div className="logo-container">
-              <img src="./logosexta.png" alt="La Sexta Logo" className="main-logo" />
+              <img src="./logonuevolasexta.png" alt="La Sexta Logo" className="main-logo" />
             </div>
           </div>
 
@@ -95,7 +200,13 @@ const Login: React.FC = () => {
 
             {/* Forgot Password */}
             <div className="forgot-password">
-              <a href="#" className="forgot-link">¿Olvidaste tu contraseña?</a>
+              <button 
+                type="button"
+                onClick={handleForgotPassword}
+                className="forgot-link-button"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
 
             {/* Botón Sign In */}

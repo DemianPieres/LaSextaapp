@@ -12,15 +12,17 @@ import { useHistory } from 'react-router-dom';
 import { eye, eyeOff, key, mail, person } from 'ionicons/icons';
 import './Register.css';
 import { useAuth } from '../context/AuthContext';
+import { authenticateWithFacebook, authenticateWithInstagram } from '../utils/oauth';
 
 const Register: React.FC = () => {
-  const { registerUser } = useAuth();
+  const { registerUser, registerWithSocial } = useAuth();
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<'facebook' | 'instagram' | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const togglePasswordVisibility = () => {
@@ -53,6 +55,38 @@ const Register: React.FC = () => {
 
   const passwordStrength = getPasswordStrength();
   const isFormValid = email.trim() !== '' && name.trim() !== '' && password.trim().length >= 6;
+
+  const handleSocialAuth = async (provider: 'facebook' | 'instagram') => {
+    try {
+      setIsSocialLoading(provider);
+      setErrorMessage('');
+
+      let authResult;
+      if (provider === 'facebook') {
+        authResult = await authenticateWithFacebook();
+      } else {
+        authResult = await authenticateWithInstagram();
+      }
+
+      await registerWithSocial(
+        provider,
+        authResult.accessToken,
+        authResult.socialId,
+        authResult.email,
+        authResult.nombre
+      );
+
+      history.push('/app/eventos');
+    } catch (error: any) {
+      const message =
+        typeof error?.message === 'string' && error.message !== ''
+          ? error.message
+          : `No se pudo completar el registro con ${provider === 'facebook' ? 'Facebook' : 'Instagram'}. Intentá nuevamente.`;
+      setErrorMessage(message);
+    } finally {
+      setIsSocialLoading(null);
+    }
+  };
 
   return (
     <IonPage className="auth-page">
@@ -94,12 +128,12 @@ const Register: React.FC = () => {
 
             {/* Campo Name */}
             <div className="input-group">
-              <label className="input-label">Your Name</label>
+              <label className="input-label">Tu Nombre</label>
               <div className="input-container">
                 <IonIcon icon={person} className="input-icon" />
                 <IonInput
                   type="text"
-                  placeholder="@TuNombre"
+                  placeholder="Nombre"
                   value={name}
                   onIonInput={(e) => setName(e.detail.value!)}
                   className="auth-input"
@@ -163,24 +197,42 @@ const Register: React.FC = () => {
 
             {/* Botones sociales */}
             <div className="social-buttons">
-              <button className="social-button instagram-button">
-                <svg className="social-icon" viewBox="0 0 24 24" width="20" height="20">
-                  <defs>
-                    <linearGradient id="instagram-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#f09433"/>
-                      <stop offset="25%" stopColor="#e6683c"/>
-                      <stop offset="50%" stopColor="#dc2743"/>
-                      <stop offset="75%" stopColor="#cc2366"/>
-                      <stop offset="100%" stopColor="#bc1888"/>
-                    </linearGradient>
-                  </defs>
-                  <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
+              <button 
+                className="social-button instagram-button"
+                onClick={() => handleSocialAuth('instagram')}
+                disabled={isLoading || isSocialLoading !== null}
+                style={{ opacity: (isLoading || isSocialLoading !== null) && isSocialLoading !== 'instagram' ? 0.5 : 1 }}
+              >
+                {isSocialLoading === 'instagram' ? (
+                  <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                ) : (
+                  <svg className="social-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <defs>
+                      <linearGradient id="instagram-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#f09433"/>
+                        <stop offset="25%" stopColor="#e6683c"/>
+                        <stop offset="50%" stopColor="#dc2743"/>
+                        <stop offset="75%" stopColor="#cc2366"/>
+                        <stop offset="100%" stopColor="#bc1888"/>
+                      </linearGradient>
+                    </defs>
+                    <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                )}
               </button>
-              <button className="social-button facebook-button">
-                <svg className="social-icon" viewBox="0 0 24 24" width="20" height="20">
-                  <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
+              <button 
+                className="social-button facebook-button"
+                onClick={() => handleSocialAuth('facebook')}
+                disabled={isLoading || isSocialLoading !== null}
+                style={{ opacity: (isLoading || isSocialLoading !== null) && isSocialLoading !== 'facebook' ? 0.5 : 1 }}
+              >
+                {isSocialLoading === 'facebook' ? (
+                  <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                ) : (
+                  <svg className="social-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                )}
               </button>
             </div>
 

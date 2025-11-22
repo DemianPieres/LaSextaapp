@@ -37,6 +37,7 @@ type AuthContextValue = {
   login: (credentials: { email: string; password: string }) => Promise<'cliente' | 'admin'>;
   loginUser: (credentials: { email: string; password: string }) => Promise<void>;
   registerUser: (payload: { email: string; password: string; nombre: string }) => Promise<void>;
+  registerWithSocial: (provider: 'facebook' | 'instagram', accessToken: string, socialId: string, email: string, nombre: string) => Promise<void>;
   loginAdmin: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
@@ -264,6 +265,27 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     persistSession(null);
   }, []);
 
+  const registerWithSocial = useCallback(
+    async (provider: 'facebook' | 'instagram', accessToken: string, socialId: string, email: string, nombre: string) => {
+      const response = await apiFetch<AuthResponse<UserProfile>>('/auth/social', {
+        method: 'POST',
+        body: { provider, accessToken, socialId, email, nombre },
+      });
+
+      if (!response.user) {
+        throw new Error('Respuesta inválida del servidor.');
+      }
+
+      const newSession: UserSession = {
+        type: 'user',
+        profile: response.user,
+        token: response.token,
+      };
+      handleSessionUpdate(newSession);
+    },
+    [handleSessionUpdate]
+  );
+
   const refreshProfile = useCallback(async () => {
     await loadProfile(session);
   }, [loadProfile, session]);
@@ -275,11 +297,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login,
       loginUser,
       registerUser,
+      registerWithSocial,
       loginAdmin,
       logout,
       refreshProfile,
     }),
-    [isInitializing, loginAdmin, loginUser, logout, refreshProfile, registerUser, session]
+    [isInitializing, loginAdmin, loginUser, logout, refreshProfile, registerUser, registerWithSocial, session]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -8,6 +8,7 @@ import { signAdminToken } from '../utils/jwt.js';
 import { verifyPassword } from '../utils/password.js';
 import { computeExpirationDate, generateTicketCode } from '../utils/tickets.js';
 import { adminEventsRouter } from './events.js';
+import { createNotification } from './notifications.js';
 import { adminBenefitsRouter } from './benefits.js';
 import { adminPointsRouter } from './points.js';
 
@@ -275,6 +276,25 @@ adminRouter.post(
       const adminId = req.admin ? parseObjectId(req.admin.userId, 'adminId') : undefined;
       const ticketId = new ObjectId();
 
+      // Obtener todos los tickets del usuario ordenados por fecha de creación (más antiguos primero)
+      const existingTickets = await db
+        .collection<TicketDocument>("Tickets")
+        .find({ usuarioId })
+        .sort({ fechaCreacion: 1 })
+        .toArray();
+
+      // Si ya hay 2 o más tickets, eliminar los más antiguos para mantener solo 2
+      if (existingTickets.length >= 2) {
+        // Eliminar todos excepto el más reciente (mantener solo 1, luego agregamos el nuevo = 2 total)
+        const ticketsToDelete = existingTickets.slice(0, existingTickets.length - 1);
+        if (ticketsToDelete.length > 0) {
+          const idsToDelete = ticketsToDelete.map((t) => t._id);
+          await db.collection<TicketDocument>("Tickets").deleteMany({
+            _id: { $in: idsToDelete },
+          });
+        }
+      }
+
       const ticketDocument: TicketDocument = {
         _id: ticketId,
         usuarioId,
@@ -342,6 +362,15 @@ adminRouter.post(
         expiresAt: ticket.fechaVencimiento ?? null,
         description: 'Ticket válido por una bebida gratuita.',
       });
+
+      // Crear notificación para el usuario
+      await createNotification(
+        usuarioId,
+        'ticket',
+        '¡Nuevo Ticket Recibido!',
+        `Has recibido un nuevo ticket. Código: ${ticket.codigoQR}`,
+        { ticketId: ticketObjectId.toHexString() }
+      );
 
       res.json({ message: 'Ticket enviado correctamente.' });
     } catch (error) {

@@ -192,3 +192,130 @@
   }
 }
 
+/* ===== REWARDS ADMIN STYLES ===== */
+
+.admin-reward-item {
+  --min-height: auto;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-reward-label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.admin-reward-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.admin-reward-image {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-reward-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-reward-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-reward-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.admin-reward-info p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.admin-reward-badges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-reward-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.admin-points-container,
+.admin-tickets-container {
+  margin-top: 8px;
+}
+
+.admin-points-container .ion-grid,
+.admin-tickets-container .ion-grid {
+  padding: 0;
+}
+
+.admin-points-container ion-col,
+.admin-tickets-container ion-col {
+  padding: 8px;
+}
+
+.admin-tickets-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-tickets-container .ion-grid {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 991px) {
+  .admin-reward-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-reward-content {
+    width: 100%;
+  }
+
+  .admin-reward-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+
+  .admin-points-container ion-col {
+    padding: 8px 0;
+  }
+}
+

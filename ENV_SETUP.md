@@ -25,8 +25,14 @@
    ```bash
    VITE_API_BASE_URL=http://localhost:4000/api
    VITE_ENABLE_MOCKS=false
+   VITE_FACEBOOK_APP_ID=tu_facebook_app_id
+   VITE_INSTAGRAM_APP_ID=tu_instagram_app_id
    ```
 2. Ajustá `VITE_API_BASE_URL` cuando despliegues el backend en otro host.
+3. Para habilitar el registro con redes sociales:
+   - Obtén un App ID de Facebook desde [Facebook Developers](https://developers.facebook.com/)
+   - El mismo App ID puede usarse para Instagram (Instagram usa Facebook Login)
+   - Agrega los IDs a las variables `VITE_FACEBOOK_APP_ID` y `VITE_INSTAGRAM_APP_ID`
 
 > **Importante:** Los archivos `.env` y `.env.local` no deben versionarse. Asegurate de mantenerlos fuera del control de versiones.
 

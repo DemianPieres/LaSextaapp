@@ -4,6 +4,8 @@ import { connectToDatabase } from '../config/database.js';
 import { requireAdminAuth, type AdminRequest } from '../middleware/auth.js';
 import { parseObjectId } from '../utils/objectId.js';
 import { verifyUserToken } from '../utils/jwt.js';
+import { createNotification } from './notifications.js';
+import { sanitizeReward } from './rewards.js';
 
 export type PointsTransaction = {
   _id: ObjectId;
@@ -20,6 +22,7 @@ export type RedeemCode = {
   usuarioId: ObjectId;
   codigo: string;
   puntosACanjear: number;
+  rewardId?: ObjectId; // ID del premio que se está canjeando
   estado: 'pendiente' | 'usado' | 'expirado';
   fechaCreacion: Date;
   fechaExpiracion: Date;
@@ -135,7 +138,7 @@ pointsRouter.get('/movements', async (req: Request, res: Response, next: NextFun
   }
 });
 
-// POST /api/points/generate-redeem-code - Generar código de canje
+// POST /api/points/generate-redeem-code - Generar código de canje para un premio específico
 pointsRouter.post('/generate-redeem-code', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization ?? '';
@@ -154,15 +157,25 @@ pointsRouter.post('/generate-redeem-code', async (req: Request, res: Response, n
       return;
     }
 
-    const { puntosACanjear } = req.body ?? {};
+    const { rewardId } = req.body ?? {};
 
-    if (typeof puntosACanjear !== 'number' || puntosACanjear < MIN_POINTS_TO_REDEEM) {
-      res.status(400).json({ message: `Debe canjear un mínimo de ${MIN_POINTS_TO_REDEEM} puntos.` });
+    if (!rewardId || !ObjectId.isValid(rewardId)) {
+      res.status(400).json({ message: 'ID de premio inválido.' });
       return;
     }
 
     const db = await connectToDatabase();
     const userId = new ObjectId(payload.userId);
+    const rewardObjectId = new ObjectId(rewardId);
+
+    // Verificar que el premio existe y está habilitado
+    const reward = await db.collection('Rewards').findOne({ _id: rewardObjectId, habilitado: true });
+
+    if (!reward) {
+      res.status(404).json({ message: 'Premio no encontrado o no disponible.' });
+      return;
+    }
+
     const user = await db.collection(COLLECTION_USERS).findOne({ _id: userId });
 
     if (!user) {
@@ -171,19 +184,20 @@ pointsRouter.post('/generate-redeem-code', async (req: Request, res: Response, n
     }
 
     const userPoints = user.puntos ?? 0;
-    if (userPoints < puntosACanjear) {
-      res.status(400).json({ message: 'No tienes suficientes puntos.' });
+    if (userPoints < reward.puntosRequeridos) {
+      res.status(400).json({ message: `No tienes suficientes puntos. Necesitas ${reward.puntosRequeridos} puntos.` });
       return;
     }
 
-    // Verificar si ya tiene un código pendiente
+    // Verificar si ya tiene un código pendiente para este premio
     const existingCode = await db.collection<RedeemCode>(COLLECTION_REDEEM_CODES).findOne({
       usuarioId: userId,
+      rewardId: rewardObjectId,
       estado: 'pendiente',
     });
 
     if (existingCode) {
-      res.status(400).json({ message: 'Ya tienes un código de canje pendiente.' });
+      res.status(400).json({ message: 'Ya tienes un código de canje pendiente para este premio.' });
       return;
     }
 
@@ -195,7 +209,8 @@ pointsRouter.post('/generate-redeem-code', async (req: Request, res: Response, n
       _id: new ObjectId(),
       usuarioId: userId,
       codigo: generateRedeemCode(),
-      puntosACanjear,
+      puntosACanjear: reward.puntosRequeridos,
+      rewardId: rewardObjectId,
       estado: 'pendiente',
       fechaCreacion: now,
       fechaExpiracion: expiration,
@@ -206,6 +221,7 @@ pointsRouter.post('/generate-redeem-code', async (req: Request, res: Response, n
     res.status(201).json({
       codigo: redeemCode.codigo,
       puntosACanjear: redeemCode.puntosACanjear,
+      rewardId: rewardObjectId.toHexString(),
       fechaExpiracion: redeemCode.fechaExpiracion.toISOString(),
     });
   } catch (error) {
@@ -265,6 +281,20 @@ adminPointsRouter.post('/add', async (req: AdminRequest, res: Response, next: Ne
 
     await db.collection<PointsTransaction>(COLLECTION_TRANSACTIONS).insertOne(transaction);
 
+    // Crear notificación para el usuario
+    try {
+      await createNotification(
+        userObjectId,
+        'puntos',
+        '¡Puntos Agregados!',
+        'Has recibido 1 punto. ¡Seguí acumulando puntos!',
+        { puntos: 1 }
+      );
+    } catch (notifError) {
+      console.error('[points] Error al crear notificación:', notifError);
+      // No fallar la operación si falla la notificación
+    }
+
     res.json({
       message: 'Punto agregado correctamente.',
       nuevosPuntos: result.value.puntos ?? 1,
@@ -322,6 +352,15 @@ adminPointsRouter.post('/validate-redeem', async (req: AdminRequest, res: Respon
       return;
     }
 
+    // Obtener información del premio si existe
+    let rewardInfo = null;
+    if (redeemCode.rewardId) {
+      const reward = await db.collection('Rewards').findOne({ _id: redeemCode.rewardId });
+      if (reward) {
+        rewardInfo = sanitizeReward(reward);
+      }
+    }
+
     // Procesar canje
     await db.collection(COLLECTION_USERS).updateOne(
       { _id: redeemCode.usuarioId },
@@ -335,12 +374,13 @@ adminPointsRouter.post('/validate-redeem', async (req: AdminRequest, res: Respon
     );
 
     // Registrar transacción
+    const rewardName = rewardInfo ? rewardInfo.nombre : 'Premio';
     const transaction: PointsTransaction = {
       _id: new ObjectId(),
       usuarioId: redeemCode.usuarioId,
       tipo: 'canje',
       cantidad: redeemCode.puntosACanjear,
-      descripcion: `Canje de ${redeemCode.puntosACanjear} puntos`,
+      descripcion: `Canje: ${rewardName} (${redeemCode.puntosACanjear} puntos)`,
       fecha: new Date(),
       procesadoPor: adminId,
     };
@@ -352,6 +392,7 @@ adminPointsRouter.post('/validate-redeem', async (req: AdminRequest, res: Respon
       usuario: user.nombre,
       puntosCanjeados: redeemCode.puntosACanjear,
       puntosRestantes: userPoints - redeemCode.puntosACanjear,
+      reward: rewardInfo,
     });
   } catch (error) {
     next(error);

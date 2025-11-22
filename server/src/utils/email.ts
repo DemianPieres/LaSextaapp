@@ -89,6 +89,31 @@ export async function sendTicketEmail({ to, userName, ticketCode, description, i
   });
 }
 
+export async function sendPasswordResetCode({ to, userName, resetCode }: { to: string; userName: string; resetCode: string }): Promise<void> {
+  const transport = ensureTransporter();
+
+  const html = `
+    <div style="background:#101015;padding:24px;font-family:Arial,Helvetica,sans-serif;color:#f3f3f3">
+      <h1 style="color:#22c55e;">¡Hola ${userName}!</h1>
+      <p>Recibiste una solicitud para restablecer tu contraseña.</p>
+      <div style="margin:24px 0;padding:20px;border:1px solid rgba(34,197,94,0.3);border-radius:16px;background:#181825;text-align:center">
+        <p style="font-size:14px;color:rgba(255,255,255,0.7)">Ingresá este código en la aplicación para continuar:</p>
+        <p style="font-size:32px;letter-spacing:8px;font-weight:bold;color:#22c55e;margin:16px 0;font-family:monospace;">${resetCode}</p>
+        <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:12px">Este código expira en 15 minutos.</p>
+      </div>
+      <p style="margin-top:24px;font-size:12px;color:rgba(255,255,255,0.4)">Si no solicitaste restablecer tu contraseña, ignorá este correo.</p>
+    </div>
+  `;
+
+  await transport.sendMail({
+    from: smtpFrom,
+    to,
+    subject: 'Código de recuperación de contraseña - La Sexta',
+    html,
+  });
+}
+
+
 
 
 

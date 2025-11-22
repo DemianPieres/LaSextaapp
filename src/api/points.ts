@@ -11,6 +11,7 @@ export type PointsMovement = {
 export type RedeemCodeResponse = {
   codigo: string;
   puntosACanjear: number;
+  rewardId?: string;
   fechaExpiracion: string;
 };
 
@@ -27,11 +28,19 @@ type AddPointResponse = {
   nuevosPuntos: number;
 };
 
-type ValidateRedeemResponse = {
+export type ValidateRedeemResponse = {
   message: string;
   usuario: string;
   puntosCanjeados: number;
   puntosRestantes: number;
+  reward?: {
+    id: string;
+    nombre: string;
+    puntosRequeridos: number;
+    descripcion: string;
+    imagenUrl: string | null;
+    habilitado: boolean;
+  };
 };
 
 type EligibilityResponse = {
@@ -54,11 +63,11 @@ export async function fetchUserMovements(token: string): Promise<PointsMovement[
   return response.movements ?? [];
 }
 
-export async function generateRedeemCode(token: string, puntosACanjear: number): Promise<RedeemCodeResponse> {
+export async function generateRedeemCode(token: string, rewardId: string): Promise<RedeemCodeResponse> {
   const response = await apiFetch<RedeemCodeResponse>('/points/generate-redeem-code', {
     authToken: token,
     method: 'POST',
-    body: { puntosACanjear },
+    body: { rewardId },
   });
   return response;
 }
@@ -89,5 +98,6 @@ export async function checkPointEligibility(token: string, usuarioId: string): P
   });
   return response.canAddToday ?? false;
 }
+
 
 

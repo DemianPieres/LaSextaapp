@@ -13,6 +13,7 @@ import {
   setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import { useEffect } from 'react';
 import { cart, gift, ticket, star, person } from 'ionicons/icons';
 import Home from './pages/Home';
 import MisTickets from './pages/MisTickets';
@@ -24,6 +25,7 @@ import Register from './pages/Register';
 import SharedBackground from './components/SharedBackground';
 import { useAuth } from './context/AuthContext';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import { initializeNotifications } from './utils/notifications';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -59,6 +61,11 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const { session, isInitializing } = useAuth();
+
+  // Inicializar notificaciones al cargar la app
+  useEffect(() => {
+    void initializeNotifications();
+  }, []);
 
   if (isInitializing) {
     return (

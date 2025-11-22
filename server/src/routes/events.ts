@@ -4,6 +4,7 @@ import { connectToDatabase } from '../config/database.js';
 import { requireAdminAuth, type AdminRequest } from '../middleware/auth.js';
 import { parseObjectId } from '../utils/objectId.js';
 import { pushEventStreamPayload, registerStreamClient } from '../utils/eventsStream.js';
+import { createNotification } from './notifications.js';
 
 export type EventDocument = {
   _id: ObjectId;
@@ -150,6 +151,23 @@ adminEventsRouter.post(
       const eventResponse = sanitizeEvent(newEvent);
       pushEventStreamPayload({ type: 'created', event: eventResponse });
 
+      // Crear notificaciones para todos los usuarios cuando se crea un nuevo evento
+      try {
+        const users = await db.collection('Usuarios').find({ rol: 'cliente' }).toArray();
+        for (const user of users) {
+          await createNotification(
+            user._id as ObjectId,
+            'evento',
+            '¡Nuevo Evento Disponible!',
+            `Se ha publicado un nuevo evento: ${newEvent.titulo}`,
+            { eventoId: eventResponse.id }
+          );
+        }
+      } catch (notifError) {
+        console.error('[events] Error al crear notificaciones:', notifError);
+        // No fallar la creación del evento si fallan las notificaciones
+      }
+
       res.status(201).json({ event: eventResponse });
     } catch (error) {
       next(error);
@@ -240,6 +258,7 @@ adminEventsRouter.delete(
 );
 
 export { adminEventsRouter, eventsRouter, sanitizeEvent };
+
 
 
 

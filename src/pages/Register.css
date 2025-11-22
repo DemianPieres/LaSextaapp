@@ -415,3 +415,10 @@
     font-size: 14px;
   }
 }
+
+/* Animación de carga */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

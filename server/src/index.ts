@@ -10,6 +10,8 @@ import { ticketsRouter } from './routes/tickets.js';
 import { eventsRouter } from './routes/events.js';
 import { benefitsRouter } from './routes/benefits.js';
 import { pointsRouter } from './routes/points.js';
+import { notificationsRouter } from './routes/notifications.js';
+import { rewardsRouter, adminRewardsRouter } from './routes/rewards.js';
 
 const PORT = Number(process.env.PORT ?? 4000);
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -51,7 +53,11 @@ async function bootstrap(): Promise<void> {
   app.use('/api/events', eventsRouter);
   app.use('/api/benefits', benefitsRouter);
   app.use('/api/points', pointsRouter);
+  app.use('/api/rewards', rewardsRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/notifications', notificationsRouter);
+  // IMPORTANTE: Las rutas más específicas deben ir ANTES de las más generales
+  app.use('/api/admin/rewards', adminRewardsRouter);
   app.use('/api/admin', adminRouter);
 
   app.use((_req, res) => {

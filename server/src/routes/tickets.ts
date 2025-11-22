@@ -43,13 +43,22 @@ ticketsRouter.get(
       }
 
       const db = await connectToDatabase();
-      const tickets = await db
+      // Obtener todos los tickets del usuario ordenados por fecha de creación (más recientes primero)
+      const allTickets = await db
         .collection<TicketsCollectionDocument>('Tickets')
-        .find({ usuarioId: userId, estado: 'valido' })
+        .find({ usuarioId: userId })
         .sort({ fechaCreacion: -1 })
         .toArray();
 
-      res.json({ tickets: tickets.map(mapTicketDocument) });
+      // Mantener solo los 2 más recientes
+      const recentTickets = allTickets.slice(0, 2);
+
+      // Filtrar solo los que están válidos
+      const activeTickets = recentTickets
+        .filter((ticket) => ticket.estado === 'valido')
+        .map(mapTicketDocument);
+
+      res.json({ tickets: activeTickets });
     } catch (error) {
       next(error);
     }
@@ -69,13 +78,22 @@ ticketsRouter.get(
       }
 
       const db = await connectToDatabase();
-      const tickets = await db
+      // Obtener todos los tickets del usuario ordenados por fecha de creación (más recientes primero)
+      const allTickets = await db
         .collection<TicketsCollectionDocument>('Tickets')
-        .find({ usuarioId: userId, estado: { $in: ['usado', 'expirado'] } })
-        .sort({ fechaUso: -1, fechaCreacion: -1 })
+        .find({ usuarioId: userId })
+        .sort({ fechaCreacion: -1 })
         .toArray();
 
-      res.json({ tickets: tickets.map(mapTicketDocument) });
+      // Mantener solo los 2 más recientes
+      const recentTickets = allTickets.slice(0, 2);
+
+      // Filtrar solo los que están usados o expirados para el historial
+      const historyTickets = recentTickets
+        .filter((ticket) => ticket.estado === 'usado' || ticket.estado === 'expirado')
+        .map(mapTicketDocument);
+
+      res.json({ tickets: historyTickets });
     } catch (error) {
       next(error);
     }

@@ -35,11 +35,12 @@ const EventCard: React.FC<EventCardProps> = ({
   const showBuyButton = isUserMode;
   const showAdminActions = mode === 'admin';
 
-  const handleBuyClick = () => {
-    if (onBuy) {
-      onBuy(event);
-      return;
-    }
+  const handleReserveClick = () => {
+    // Redirigir a WhatsApp con mensaje predeterminado
+    const phoneNumber = '3825414123';
+    const message = encodeURIComponent('Hola sexta club! me gustaria realizar una reserva para un evento.');
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -48,9 +49,6 @@ const EventCard: React.FC<EventCardProps> = ({
         <div className="event-chip-row event-chip-row-top">
           <div className="event-chip event-chip-light">{event.fecha}</div>
           <div className="event-chip event-chip-dark">{event.hora}</div>
-        </div>
-        <div className="event-title-wrapper">
-          <div className="event-title-large">{event.titulo}</div>
         </div>
         <div className="event-chip-row event-chip-row-bottom">
           <div className="event-chip event-chip-light">{event.dia}</div>
@@ -71,13 +69,9 @@ const EventCard: React.FC<EventCardProps> = ({
           <IonButton
             className="buy-ticket-btn"
             expand="block"
-            href={event.linkCompra ?? undefined}
-            onClick={event.linkCompra ? undefined : handleBuyClick}
-            target={event.linkCompra ? '_blank' : undefined}
-            rel={event.linkCompra ? 'noopener noreferrer' : undefined}
-            disabled={!event.linkCompra && onBuy === undefined}
+            onClick={handleReserveClick}
           >
-            Comprar Tickets
+            Reservar Aquí
           </IonButton>
         ) : null}
         {showAdminActions ? (

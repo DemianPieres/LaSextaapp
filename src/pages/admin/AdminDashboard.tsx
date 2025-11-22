@@ -44,6 +44,12 @@ import {
   refreshOutline,
   scanOutline,
   ticketOutline,
+  starOutline,
+  checkmarkOutline,
+  closeOutline,
+  searchOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
 } from 'ionicons/icons';
 import {
   fetchAdminUsers,
@@ -71,6 +77,19 @@ import {
   updateAdminBenefit,
   type BenefitDto,
 } from '../../api/benefits';
+import {
+  addPointToUser,
+  checkPointEligibility,
+  validateRedeemCode,
+  type ValidateRedeemResponse,
+} from '../../api/points';
+import {
+  createAdminReward,
+  deleteAdminReward,
+  fetchAdminRewards,
+  updateAdminReward,
+  type RewardDto,
+} from '../../api/rewards';
 import EventCard from '../../components/EventCard';
 import { useAuth } from '../../context/AuthContext';
 import './AdminDashboard.css';
@@ -155,7 +174,7 @@ const AdminDashboard: React.FC = () => {
     diasValidez: 7,
   });
 
-  const [activeSection, setActiveSection] = useState<'tickets' | 'events' | 'benefits'>('tickets');
+  const [activeSection, setActiveSection] = useState<'tickets' | 'events' | 'benefits' | 'points'>('tickets');
   const [events, setEvents] = useState<EventDto[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [eventsError, setEventsError] = useState<string | null>(null);
@@ -179,6 +198,32 @@ const AdminDashboard: React.FC = () => {
   const [isSavingBenefit, setIsSavingBenefit] = useState(false);
   const [deletingBenefitId, setDeletingBenefitId] = useState<string | null>(null);
   const [benefitToDelete, setBenefitToDelete] = useState<BenefitDto | null>(null);
+
+  // Estados para puntos y premios
+  const [rewards, setRewards] = useState<RewardDto[]>([]);
+  const [rewardsLoading, setRewardsLoading] = useState(false);
+  const [rewardFormState, setRewardFormState] = useState({
+    nombre: '',
+    puntosRequeridos: 10,
+    descripcion: '',
+    imagenUrl: '',
+    habilitado: true,
+  });
+  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+  const [editingRewardId, setEditingRewardId] = useState<string | null>(null);
+  const [isSavingReward, setIsSavingReward] = useState(false);
+  const [deletingRewardId, setDeletingRewardId] = useState<string | null>(null);
+  const [rewardToDelete, setRewardToDelete] = useState<RewardDto | null>(null);
+  const [redeemCodeInput, setRedeemCodeInput] = useState('');
+  const [isValidatingRedeem, setIsValidatingRedeem] = useState(false);
+  const [redeemValidationResult, setRedeemValidationResult] = useState<ValidateRedeemResponse | null>(null);
+  const [userEligibility, setUserEligibility] = useState<Record<string, boolean>>({});
+  const [addingPointUserId, setAddingPointUserId] = useState<string | null>(null);
+  const [userSearchFilter, setUserSearchFilter] = useState('');
+  const [currentUserPage, setCurrentUserPage] = useState(1);
+  const [ticketUserSearchFilter, setTicketUserSearchFilter] = useState('');
+  const [currentTicketUserPage, setCurrentTicketUserPage] = useState(1);
+  const USERS_PER_PAGE = 4;
 
   const activeTickets = useMemo(
     () => tickets.filter((ticket) => ticket.estado === 'valido'),
@@ -269,6 +314,34 @@ const AdminDashboard: React.FC = () => {
     }
   }, [adminToken, showToast]);
 
+  const loadRewards = useCallback(async () => {
+    if (!adminToken) return;
+    setRewardsLoading(true);
+    try {
+      const data = await fetchAdminRewards(adminToken);
+      setRewards(data || []);
+    } catch (error: unknown) {
+      console.error('[admin] Error al cargar premios:', error);
+      // No mostrar toast en el error inicial para no interrumpir la carga
+      setRewards([]);
+    } finally {
+      setRewardsLoading(false);
+    }
+  }, [adminToken]);
+
+  const checkEligibility = useCallback(
+    async (userId: string) => {
+      if (!adminToken) return;
+      try {
+        const canAdd = await checkPointEligibility(adminToken, userId);
+        setUserEligibility((prev) => ({ ...prev, [userId]: canAdd }));
+      } catch (error) {
+        console.error('Error al verificar elegibilidad:', error);
+      }
+    },
+    [adminToken]
+  );
+
   const handleEventStreamMessage = useCallback((message: EventStreamMessage) => {
     switch (message.type) {
       case 'snapshot':
@@ -321,10 +394,20 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     if (adminToken) {
       void loadBenefits();
+      void loadRewards();
     } else {
       setBenefits([]);
+      setRewards([]);
     }
-  }, [adminToken, loadBenefits]);
+  }, [adminToken, loadBenefits, loadRewards]);
+
+  // Cargar elegibilidad cuando se cargan los usuarios o se selecciona uno
+  useEffect(() => {
+    if (adminToken && selectedUserId) {
+      void checkEligibility(selectedUserId);
+    }
+  }, [adminToken, selectedUserId, checkEligibility]);
+
 
   useEffect(() => {
     if (!adminToken) {
@@ -419,8 +502,23 @@ const AdminDashboard: React.FC = () => {
     const trimmedImagen = eventFormState.imagenFondo.trim();
     const trimmedLink = eventFormState.linkCompra.trim();
 
+    // Validar formato de fecha DD/MM/YYYY
+    const fechaRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     if (!trimmedTitulo || !trimmedFecha || !trimmedHora || !trimmedDia) {
       showToast('Completá al menos título, fecha, hora y día para guardar el evento.', 'warning');
+      return;
+    }
+    
+    if (!fechaRegex.test(trimmedFecha)) {
+      showToast('La fecha debe tener el formato DD/MM/YYYY (ejemplo: 22/11/2025).', 'warning');
+      return;
+    }
+    
+    // Validar que la fecha sea válida
+    const [dia, mes, año] = trimmedFecha.split('/').map(Number);
+    const fechaObj = new Date(año, mes - 1, dia);
+    if (fechaObj.getDate() !== dia || fechaObj.getMonth() !== mes - 1 || fechaObj.getFullYear() !== año) {
+      showToast('La fecha ingresada no es válida.', 'warning');
       return;
     }
 
@@ -536,6 +634,155 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // Funciones para puntos y premios
+  const handleAddPoint = async (userId: string) => {
+    if (!adminToken) return;
+    setAddingPointUserId(userId);
+    try {
+      await addPointToUser(adminToken, userId);
+      showToast('Punto agregado correctamente.');
+      await loadUsers();
+      await checkEligibility(userId);
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudo agregar el punto. Intenta nuevamente.');
+      showToast(message, 'danger');
+    } finally {
+      setAddingPointUserId(null);
+    }
+  };
+
+  const handleValidateRedeemCode = async () => {
+    if (!adminToken || !redeemCodeInput.trim()) {
+      showToast('Ingresá un código de canje.', 'warning');
+      return;
+    }
+    setIsValidatingRedeem(true);
+    setRedeemValidationResult(null);
+    try {
+      const result = await validateRedeemCode(adminToken, redeemCodeInput.trim());
+      setRedeemValidationResult(result);
+      showToast(result.message, 'success');
+      setRedeemCodeInput('');
+      await loadUsers();
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'Error al validar el código de canje.');
+      showToast(message, 'danger');
+    } finally {
+      setIsValidatingRedeem(false);
+    }
+  };
+
+  const handleScanRedeemCode = async () => {
+    if (!adminToken) return;
+    try {
+      setIsScanning(true);
+      const result = (await CapacitorBarcodeScanner.scanBarcode({
+        hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
+        scanInstructions: 'Apuntá la cámara al código QR de canje',
+        scanText: 'Escanear',
+      })) as CapacitorBarcodeScannerScanResult;
+
+      setIsScanning(false);
+
+      const code = result?.ScanResult ?? null;
+
+      if (code) {
+        setRedeemCodeInput(code);
+        await handleValidateRedeemCode();
+      } else {
+        showToast('No se detectó ningún código QR.', 'warning');
+      }
+    } catch (error: any) {
+      if (error.message !== 'User canceled' && error.message !== 'User cancelled') {
+        console.error('[admin] Error al escanear QR:', error);
+        showToast('No se pudo utilizar la cámara. Ingresá el código manualmente.', 'danger');
+      }
+      setIsScanning(false);
+    }
+  };
+
+  const handleEditReward = (reward: RewardDto) => {
+    setEditingRewardId(reward.id);
+    setRewardFormState({
+      nombre: reward.nombre,
+      puntosRequeridos: reward.puntosRequeridos,
+      descripcion: reward.descripcion,
+      imagenUrl: reward.imagenUrl ?? '',
+      habilitado: reward.habilitado,
+    });
+    setIsRewardModalOpen(true);
+  };
+
+  const handleCloseRewardModal = () => {
+    setIsRewardModalOpen(false);
+    setEditingRewardId(null);
+    setRewardFormState({
+      nombre: '',
+      puntosRequeridos: 10,
+      descripcion: '',
+      imagenUrl: '',
+      habilitado: true,
+    });
+  };
+
+  const handleSubmitReward = async () => {
+    if (!adminToken) return;
+
+    const trimmedNombre = rewardFormState.nombre.trim();
+    const trimmedDescripcion = rewardFormState.descripcion.trim();
+
+    if (!trimmedNombre || !trimmedDescripcion) {
+      showToast('Completá todos los campos obligatorios.', 'warning');
+      return;
+    }
+
+    if (rewardFormState.puntosRequeridos < 1) {
+      showToast('Los puntos requeridos deben ser mayor a 0.', 'warning');
+      return;
+    }
+
+    const payload = {
+      nombre: trimmedNombre,
+      puntosRequeridos: rewardFormState.puntosRequeridos,
+      descripcion: trimmedDescripcion,
+      imagenUrl: rewardFormState.imagenUrl.trim() || undefined,
+      habilitado: rewardFormState.habilitado,
+    };
+
+    setIsSavingReward(true);
+    try {
+      if (editingRewardId) {
+        await updateAdminReward(adminToken, editingRewardId, payload);
+        showToast('Premio actualizado correctamente.');
+      } else {
+        await createAdminReward(adminToken, payload);
+        showToast('Premio creado correctamente.');
+      }
+      handleCloseRewardModal();
+      await loadRewards();
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudo guardar el premio. Intenta nuevamente.');
+      showToast(message, 'danger');
+    } finally {
+      setIsSavingReward(false);
+    }
+  };
+
+  const handleDeleteReward = async (rewardId: string) => {
+    if (!adminToken) return;
+    setDeletingRewardId(rewardId);
+    try {
+      await deleteAdminReward(adminToken, rewardId);
+      showToast('Premio eliminado correctamente.');
+      await loadRewards();
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'No se pudo eliminar el premio. Intenta nuevamente.');
+      showToast(message, 'danger');
+    } finally {
+      setDeletingRewardId(null);
+    }
+  };
+
   const handleDeleteBenefit = async (benefitId: string) => {
     if (!adminToken) return;
     setDeletingBenefitId(benefitId);
@@ -609,11 +856,62 @@ const AdminDashboard: React.FC = () => {
     [selectedUserId, users]
   );
 
+  // Filtrar usuarios por nombre o email
+  const filteredUsers = useMemo(() => {
+    if (!userSearchFilter.trim()) {
+      return users;
+    }
+    const filter = userSearchFilter.toLowerCase().trim();
+    return users.filter(
+      (user) =>
+        user.nombre.toLowerCase().includes(filter) ||
+        user.email.toLowerCase().includes(filter)
+    );
+  }, [users, userSearchFilter]);
+
+  // Paginación de usuarios
+  const totalUserPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentUserPage - 1) * USERS_PER_PAGE;
+    const endIndex = startIndex + USERS_PER_PAGE;
+    return filteredUsers.slice(startIndex, endIndex);
+  }, [filteredUsers, currentUserPage]);
+
+  // Resetear página cuando cambia el filtro
+  useEffect(() => {
+    setCurrentUserPage(1);
+  }, [userSearchFilter]);
+
+  // Filtrar usuarios para la sección de tickets
+  const filteredTicketUsers = useMemo(() => {
+    if (!ticketUserSearchFilter.trim()) {
+      return users;
+    }
+    const filter = ticketUserSearchFilter.toLowerCase().trim();
+    return users.filter(
+      (user) =>
+        user.nombre.toLowerCase().includes(filter) ||
+        user.email.toLowerCase().includes(filter)
+    );
+  }, [users, ticketUserSearchFilter]);
+
+  // Paginación de usuarios para tickets
+  const totalTicketUserPages = Math.ceil(filteredTicketUsers.length / USERS_PER_PAGE);
+  const paginatedTicketUsers = useMemo(() => {
+    const startIndex = (currentTicketUserPage - 1) * USERS_PER_PAGE;
+    const endIndex = startIndex + USERS_PER_PAGE;
+    return filteredTicketUsers.slice(startIndex, endIndex);
+  }, [filteredTicketUsers, currentTicketUserPage]);
+
+  // Resetear página de tickets cuando cambia el filtro
+  useEffect(() => {
+    setCurrentTicketUserPage(1);
+  }, [ticketUserSearchFilter]);
+
   return (
     <IonPage className="page-with-shared-background">
       <IonHeader className="custom-header">
         <IonToolbar className="header-toolbar">
-          <IonTitle>Panel Administrador</IonTitle>
           <IonButton fill="clear" slot="end" onClick={logout}>
             <IonIcon icon={logOutOutline} slot="start" />
             Cerrar sesión
@@ -624,18 +922,20 @@ const AdminDashboard: React.FC = () => {
         <div className="tickets-wrapper">
           <header className="tickets-header">
             <div className="tickets-icon">
-              <IonIcon icon={activeSection === 'tickets' ? ticketOutline : activeSection === 'events' ? calendarOutline : giftOutline} />
+              <IonIcon icon={activeSection === 'tickets' ? ticketOutline : activeSection === 'events' ? calendarOutline : activeSection === 'benefits' ? giftOutline : starOutline} />
             </div>
             <div className="tickets-heading">
               <h1>
-                {activeSection === 'tickets' ? 'Gestión de Tickets' : activeSection === 'events' ? 'Gestión de Eventos' : 'Gestión de Beneficios'}
+                {activeSection === 'tickets' ? 'Gestión de Tickets' : activeSection === 'events' ? 'Gestión de Eventos' : activeSection === 'benefits' ? 'Gestión de Beneficios' : 'Gestión de Puntos y Premios'}
               </h1>
               <p>
                 {activeSection === 'tickets'
                   ? 'Emití, enviá y validá códigos QR en tiempo real. Todos los cambios se reflejan automáticamente en los usuarios.'
                   : activeSection === 'events'
                   ? 'Creá, editá y eliminá eventos. Los usuarios verán las actualizaciones al instante sin recargar la app.'
-                  : 'Creá, editá y eliminá beneficios con descuentos exclusivos para los usuarios.'}
+                  : activeSection === 'benefits'
+                  ? 'Creá, editá y eliminá beneficios con descuentos exclusivos para los usuarios.'
+                  : 'Gestioná puntos de usuarios y premios canjeables. Validá códigos QR de canje.'}
               </p>
             </div>
           </header>
@@ -643,7 +943,7 @@ const AdminDashboard: React.FC = () => {
           <IonSegment
             value={activeSection}
             onIonChange={(event) => {
-              const value = (event.detail.value as 'tickets' | 'events' | 'benefits') ?? 'tickets';
+              const value = (event.detail.value as 'tickets' | 'events' | 'benefits' | 'points') ?? 'tickets';
               setActiveSection(value);
             }}
             className="admin-section-segment"
@@ -657,46 +957,38 @@ const AdminDashboard: React.FC = () => {
             <IonSegmentButton value="benefits">
               <IonLabel>Beneficios</IonLabel>
             </IonSegmentButton>
+            <IonSegmentButton value="points">
+              <IonLabel>Puntos</IonLabel>
+            </IonSegmentButton>
           </IonSegment>
 
           {activeSection === 'tickets' ? (
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12" sizeLg="4">
-                  <IonCard>
-                    <IonCardHeader>
-                      <IonCardTitle>Sesión activa</IonCardTitle>
-                      <IonCardSubtitle>Datos del administrador logueado</IonCardSubtitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                      {admin ? (
-                        <IonList lines="none">
-                          <IonItem>
-                            <IonLabel>
-                              <h2>Nombre</h2>
-                              <p>{admin.nombre}</p>
-                            </IonLabel>
-                          </IonItem>
-                          <IonItem>
-                            <IonLabel>
-                              <h2>Email</h2>
-                              <p>{admin.email}</p>
-                            </IonLabel>
-                          </IonItem>
-                        </IonList>
-                      ) : (
-                        <IonText>No se pudo cargar la información del administrador.</IonText>
-                      )}
-                    </IonCardContent>
-                  </IonCard>
-
+            <div className="admin-tickets-container">
+              <IonGrid>
+                <IonRow>
+                  <IonCol size="12" sizeLg="4">
                   <IonCard>
                     <IonCardHeader>
                       <IonCardTitle>Usuarios</IonCardTitle>
                       <IonCardSubtitle>Seleccioná un usuario para gestionar sus tickets</IonCardSubtitle>
                     </IonCardHeader>
                     <IonCardContent>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+                        <IonIcon icon={searchOutline} style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '18px' }} />
+                        <IonText style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.8)' }}>
+                          Buscá usuarios por nombre o email
+                        </IonText>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                        <IonItem style={{ flex: 1, minWidth: '200px', '--background': 'rgba(255, 255, 255, 0.05)', '--border-radius': '8px' }}>
+                          <IonIcon icon={searchOutline} slot="start" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
+                          <IonInput
+                            placeholder="Buscar por nombre o email..."
+                            value={ticketUserSearchFilter}
+                            onIonInput={(e) => setTicketUserSearchFilter(e.detail.value ?? '')}
+                            style={{ '--color': 'white' }}
+                          />
+                        </IonItem>
                         <IonButton
                           size="small"
                           color="medium"
@@ -715,26 +1007,55 @@ const AdminDashboard: React.FC = () => {
                         <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
                           <IonSpinner />
                         </div>
-                      ) : users.length === 0 ? (
-                        <IonText color="medium">No hay usuarios registrados.</IonText>
+                      ) : filteredTicketUsers.length === 0 ? (
+                        <IonText color="medium">
+                          {ticketUserSearchFilter.trim() ? 'No se encontraron usuarios con ese criterio de búsqueda.' : 'No hay usuarios registrados.'}
+                        </IonText>
                       ) : (
-                        <IonList>
-                          {users.map((user) => (
-                            <IonItem
-                              key={user.id}
-                              button
-                              detail
-                              color={selectedUserId === user.id ? 'primary' : undefined}
-                              onClick={() => setSelectedUserId(user.id)}
-                            >
-                              <IonLabel>
-                                <h2>{user.nombre}</h2>
-                                <p>{user.email}</p>
-                              </IonLabel>
-                              <IonBadge color="success">{user.ticketsActivos} activos</IonBadge>
-                            </IonItem>
-                          ))}
-                        </IonList>
+                        <>
+                          <IonList>
+                            {paginatedTicketUsers.map((user) => (
+                              <IonItem
+                                key={user.id}
+                                button
+                                detail
+                                color={selectedUserId === user.id ? 'primary' : undefined}
+                                onClick={() => setSelectedUserId(user.id)}
+                              >
+                                <IonLabel>
+                                  <h2>{user.nombre}</h2>
+                                  <p>{user.email}</p>
+                                </IonLabel>
+                                <IonBadge color="success">{user.ticketsActivos} activos</IonBadge>
+                              </IonItem>
+                            ))}
+                          </IonList>
+                          {totalTicketUserPages > 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+                              <IonButton
+                                size="small"
+                                color="medium"
+                                disabled={currentTicketUserPage === 1}
+                                onClick={() => setCurrentTicketUserPage((prev) => Math.max(1, prev - 1))}
+                              >
+                                <IonIcon icon={chevronBackOutline} slot="start" />
+                                Anterior
+                              </IonButton>
+                              <IonText style={{ color: 'white', fontSize: '14px' }}>
+                                Página {currentTicketUserPage} de {totalTicketUserPages} ({filteredTicketUsers.length} usuario{filteredTicketUsers.length !== 1 ? 's' : ''})
+                              </IonText>
+                              <IonButton
+                                size="small"
+                                color="medium"
+                                disabled={currentTicketUserPage === totalTicketUserPages}
+                                onClick={() => setCurrentTicketUserPage((prev) => Math.min(totalTicketUserPages, prev + 1))}
+                              >
+                                Siguiente
+                                <IonIcon icon={chevronForwardOutline} slot="end" />
+                              </IonButton>
+                            </div>
+                          )}
+                        </>
                       )}
                     </IonCardContent>
                   </IonCard>
@@ -886,9 +1207,10 @@ const AdminDashboard: React.FC = () => {
                       )}
                     </IonCardContent>
                   </IonCard>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </div>
           ) : activeSection === 'events' ? (
             <section className="admin-events-container">
               <div className="admin-events-toolbar">
@@ -1017,6 +1339,249 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </section>
+          ) : activeSection === 'points' ? (
+            <div className="admin-points-container">
+              <IonGrid>
+                <IonRow>
+                  <IonCol size="12" sizeLg="4">
+                  <IonCard>
+                    <IonCardHeader>
+                      <IonCardTitle>Agregar Puntos</IonCardTitle>
+                      <IonCardSubtitle>Seleccioná un usuario para agregarle puntos</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+                        <IonIcon icon={searchOutline} style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '18px' }} />
+                        <IonText style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.8)' }}>
+                          Buscá usuarios por nombre o email
+                        </IonText>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                        <IonItem style={{ flex: 1, minWidth: '200px', '--background': 'rgba(255, 255, 255, 0.05)', '--border-radius': '8px' }}>
+                          <IonIcon icon={searchOutline} slot="start" style={{ color: 'rgba(255, 255, 255, 0.6)' }} />
+                          <IonInput
+                            placeholder="Buscar por nombre o email..."
+                            value={userSearchFilter}
+                            onIonInput={(e) => setUserSearchFilter(e.detail.value ?? '')}
+                            style={{ '--color': 'white' }}
+                          />
+                        </IonItem>
+                        <IonButton
+                          size="small"
+                          color="medium"
+                          onClick={() => {
+                            void loadUsers();
+                            if (selectedUserId) {
+                              void checkEligibility(selectedUserId);
+                            }
+                          }}
+                        >
+                          <IonIcon icon={refreshOutline} slot="start" />
+                          Actualizar
+                        </IonButton>
+                      </div>
+                      {usersLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+                          <IonSpinner />
+                        </div>
+                      ) : filteredUsers.length === 0 ? (
+                        <IonText color="medium">
+                          {userSearchFilter.trim() ? 'No se encontraron usuarios con ese criterio de búsqueda.' : 'No hay usuarios registrados.'}
+                        </IonText>
+                      ) : (
+                        <>
+                          <IonList>
+                            {paginatedUsers.map((user) => {
+                              const canAdd = userEligibility[user.id] !== false && userEligibility[user.id] !== undefined ? userEligibility[user.id] : true;
+                              const isAdding = addingPointUserId === user.id;
+                              return (
+                                <IonItem key={user.id} button detail onClick={() => setSelectedUserId(user.id)}>
+                                  <IonLabel>
+                                    <h2>{user.nombre}</h2>
+                                    <p>{user.email}</p>
+                                  </IonLabel>
+                                  <IonButton
+                                    size="small"
+                                    color={canAdd ? 'success' : 'medium'}
+                                    disabled={!canAdd || isAdding}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      void handleAddPoint(user.id);
+                                    }}
+                                  >
+                                    {isAdding ? 'Agregando...' : canAdd ? 'Agregar 1 punto' : 'Ya agregado hoy'}
+                                  </IonButton>
+                                </IonItem>
+                              );
+                            })}
+                          </IonList>
+                          {totalUserPages > 1 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '12px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
+                              <IonButton
+                                size="small"
+                                color="medium"
+                                disabled={currentUserPage === 1}
+                                onClick={() => setCurrentUserPage((prev) => Math.max(1, prev - 1))}
+                              >
+                                <IonIcon icon={chevronBackOutline} slot="start" />
+                                Anterior
+                              </IonButton>
+                              <IonText style={{ color: 'white', fontSize: '14px' }}>
+                                Página {currentUserPage} de {totalUserPages} ({filteredUsers.length} usuario{filteredUsers.length !== 1 ? 's' : ''})
+                              </IonText>
+                              <IonButton
+                                size="small"
+                                color="medium"
+                                disabled={currentUserPage === totalUserPages}
+                                onClick={() => setCurrentUserPage((prev) => Math.min(totalUserPages, prev + 1))}
+                              >
+                                Siguiente
+                                <IonIcon icon={chevronForwardOutline} slot="end" />
+                              </IonButton>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
+
+                  <IonCard>
+                    <IonCardHeader>
+                      <IonCardTitle>Validar Canje</IonCardTitle>
+                      <IonCardSubtitle>Escaneá o ingresá manualmente un código QR de canje</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent className="admin-validation-card">
+                      <IonTextarea
+                        value={redeemCodeInput}
+                        placeholder="Ej: REDEEM-ABC12345"
+                        autoGrow
+                        onIonInput={(event) => setRedeemCodeInput(event.detail.value ?? '')}
+                      />
+                      <div className="admin-validation-actions">
+                        <IonButton onClick={handleValidateRedeemCode} disabled={isValidatingRedeem}>
+                          <IonIcon icon={checkmarkOutline} slot="start" />
+                          Validar código
+                        </IonButton>
+                        <IonButton
+                          color="tertiary"
+                          onClick={handleScanRedeemCode}
+                          disabled={isScanning && Capacitor.isNativePlatform()}
+                        >
+                          <IonIcon icon={scanOutline} slot="start" />
+                          {isScanning ? 'Escaneando...' : 'Escanear'}
+                        </IonButton>
+                      </div>
+                      {redeemValidationResult && (
+                        <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(76, 175, 80, 0.1)', borderRadius: '8px' }}>
+                          <IonText color="success">
+                            <strong>Canje validado:</strong>
+                            <br />
+                            Usuario: {redeemValidationResult.usuario}
+                            <br />
+                            Premio: {redeemValidationResult.reward?.nombre || 'N/A'}
+                            <br />
+                            Puntos canjeados: {redeemValidationResult.puntosCanjeados}
+                            <br />
+                            Puntos restantes: {redeemValidationResult.puntosRestantes}
+                          </IonText>
+                        </div>
+                      )}
+                      <IonText color="medium">
+                        <small>
+                          En navegadores de escritorio puede que el escaneo no esté disponible. En ese caso, ingresá el código manualmente.
+                        </small>
+                      </IonText>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+
+                <IonCol size="12" sizeLg="8">
+                  <IonCard>
+                    <IonCardHeader>
+                      <IonCardTitle>Gestión de Premios</IonCardTitle>
+                      <IonCardSubtitle>Creá, editá y eliminá premios canjeables</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px', gap: '8px' }}>
+                        <IonButton onClick={() => {
+                          setEditingRewardId(null);
+                          setRewardFormState({
+                            nombre: '',
+                            puntosRequeridos: 10,
+                            descripcion: '',
+                            imagenUrl: '',
+                            habilitado: true,
+                          });
+                          setIsRewardModalOpen(true);
+                        }}>
+                          <IonIcon icon={addOutline} slot="start" />
+                          Nuevo premio
+                        </IonButton>
+                        <IonButton color="medium" onClick={() => void loadRewards()} disabled={rewardsLoading}>
+                          <IonIcon icon={refreshOutline} slot="start" />
+                          Actualizar
+                        </IonButton>
+                      </div>
+
+                      {rewardsLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                          <IonSpinner />
+                        </div>
+                      ) : rewards.length === 0 ? (
+                        <IonText color="medium">No hay premios creados todavía. Creá el primero para que los usuarios puedan canjearlo.</IonText>
+                      ) : (
+                        <IonList>
+                          {rewards.map((reward) => (
+                            <IonItem key={reward.id} className="admin-reward-item">
+                              <IonLabel className="admin-reward-label">
+                                <div className="admin-reward-content">
+                                  {reward.imagenUrl && (
+                                    <div className="admin-reward-image">
+                                      <img
+                                        src={reward.imagenUrl}
+                                        alt={reward.nombre}
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="admin-reward-info">
+                                    <h3>{reward.nombre}</h3>
+                                    <p>{reward.descripcion}</p>
+                                    <div className="admin-reward-badges">
+                                      <IonBadge color="warning">{reward.puntosRequeridos} puntos</IonBadge>
+                                      <IonBadge color={reward.habilitado ? 'success' : 'medium'}>
+                                        {reward.habilitado ? 'Habilitado' : 'Deshabilitado'}
+                                      </IonBadge>
+                                    </div>
+                                  </div>
+                                </div>
+                              </IonLabel>
+                              <div className="admin-reward-actions" slot="end">
+                                <IonButton
+                                  size="small"
+                                  color="tertiary"
+                                  onClick={() => handleEditReward(reward)}
+                                >
+                                  Editar
+                                </IonButton>
+                                <IonButton
+                                  size="small"
+                                  color="danger"
+                                  onClick={() => setRewardToDelete(reward)}
+                                  disabled={deletingRewardId === reward.id}
+                                >
+                                  {deletingRewardId === reward.id ? 'Eliminando...' : 'Eliminar'}
+                                </IonButton>
+                              </div>
+                            </IonItem>
+                          ))}
+                        </IonList>
+                      )}
+                    </IonCardContent>
+                  </IonCard>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </div>
           ) : null}
         </div>
 
@@ -1093,10 +1658,11 @@ const AdminDashboard: React.FC = () => {
                 />
               </IonItem>
               <IonItem>
-                <IonLabel position="stacked">Fecha</IonLabel>
+                <IonLabel position="stacked">Fecha (DD/MM/YYYY) *</IonLabel>
                 <IonInput
                   value={eventFormState.fecha}
-                  placeholder="Ej: 25 dic."
+                  placeholder="Ej: 22/11/2025"
+                  required
                   onIonChange={(event) =>
                     setEventFormState((prev) => ({
                       ...prev,
@@ -1351,6 +1917,124 @@ const AdminDashboard: React.FC = () => {
             },
           ]}
           onDidDismiss={() => setBenefitToDelete(null)}
+        />
+
+        <IonModal isOpen={isRewardModalOpen} onDidDismiss={handleCloseRewardModal}>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>{editingRewardId ? 'Editar premio' : 'Nuevo premio'}</IonTitle>
+              <IonButton slot="end" fill="clear" onClick={handleCloseRewardModal}>
+                Cerrar
+              </IonButton>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <IonList lines="full">
+              <IonItem>
+                <IonLabel position="stacked">Nombre del premio *</IonLabel>
+                <IonInput
+                  value={rewardFormState.nombre}
+                  placeholder="Ej: Bebida consumible"
+                  onIonChange={(event) =>
+                    setRewardFormState((prev) => ({
+                      ...prev,
+                      nombre: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Puntos requeridos *</IonLabel>
+                <IonInput
+                  type="number"
+                  value={rewardFormState.puntosRequeridos}
+                  min={1}
+                  onIonInput={(event) =>
+                    setRewardFormState((prev) => ({
+                      ...prev,
+                      puntosRequeridos: Number(event.detail.value ?? 10),
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">Descripción *</IonLabel>
+                <IonTextarea
+                  value={rewardFormState.descripcion}
+                  autoGrow
+                  placeholder="Descripción del premio"
+                  onIonChange={(event) =>
+                    setRewardFormState((prev) => ({
+                      ...prev,
+                      descripcion: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel position="stacked">URL de imagen (opcional)</IonLabel>
+                <IonInput
+                  value={rewardFormState.imagenUrl}
+                  placeholder="URL pública de la imagen"
+                  onIonChange={(event) =>
+                    setRewardFormState((prev) => ({
+                      ...prev,
+                      imagenUrl: event.detail.value?.toString() ?? '',
+                    }))
+                  }
+                />
+              </IonItem>
+              <IonItem>
+                <IonLabel>Habilitado</IonLabel>
+                <input
+                  type="checkbox"
+                  checked={rewardFormState.habilitado}
+                  onChange={(e) =>
+                    setRewardFormState((prev) => ({
+                      ...prev,
+                      habilitado: e.target.checked,
+                    }))
+                  }
+                  style={{ marginLeft: 'auto' }}
+                />
+              </IonItem>
+            </IonList>
+            <IonButton
+              expand="block"
+              style={{ marginTop: '24px' }}
+              onClick={handleSubmitReward}
+              disabled={isSavingReward}
+            >
+              {isSavingReward
+                ? 'Guardando...'
+                : editingRewardId
+                ? 'Actualizar premio'
+                : 'Crear premio'}
+            </IonButton>
+          </IonContent>
+        </IonModal>
+
+        <IonAlert
+          isOpen={rewardToDelete !== null}
+          header="Eliminar premio"
+          message={`¿Seguro que querés eliminar "${rewardToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+          buttons={[
+            {
+              text: 'Cancelar',
+              role: 'cancel',
+            },
+            {
+              text: 'Eliminar',
+              role: 'destructive',
+              handler: () => {
+                const rewardId = rewardToDelete?.id;
+                if (rewardId) {
+                  void handleDeleteReward(rewardId);
+                }
+              },
+            },
+          ]}
+          onDidDismiss={() => setRewardToDelete(null)}
         />
       </IonContent>
     </IonPage>

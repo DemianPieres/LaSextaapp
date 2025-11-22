@@ -25,8 +25,8 @@
         <item name="android:windowSplashScreenAnimationDuration">1000</item>
         <!-- Color del ícono si es vectorial -->
         <item name="android:windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
-        <!-- Branding opcional -->
-        <item name="android:windowSplashScreenBrandingImage">@drawable/logosexta</item>
+        <!-- Branding opcional - Removido para evitar duplicación del logo -->
+        <!-- <item name="android:windowSplashScreenBrandingImage">@drawable/logosexta</item> -->
         <!-- Configuraciones AppCompat -->
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>

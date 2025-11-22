@@ -79,8 +79,24 @@ const MisTickets: React.FC = () => {
         fetchActiveTickets(userId, token),
         fetchTicketsHistory(userId, token),
       ]);
-      setActiveTickets(active.map(mapTicket));
-      setHistoryTickets(history.map(mapTicket));
+      
+      // Combinar todos los tickets DTOs y ordenar por fecha de creación (más recientes primero)
+      const allTickets = [...active, ...history];
+      allTickets.sort((a, b) => {
+        const dateA = new Date(a.fechaCreacion).getTime();
+        const dateB = new Date(b.fechaCreacion).getTime();
+        return dateB - dateA;
+      });
+      
+      // Mantener solo los 2 más recientes
+      const recentTickets = allTickets.slice(0, 2);
+      
+      // Separar en activos e historial basándose en el estado del DTO
+      const recentActive = recentTickets.filter((t) => t.estado === 'valido').map(mapTicket);
+      const recentHistory = recentTickets.filter((t) => t.estado !== 'valido').map(mapTicket);
+      
+      setActiveTickets(recentActive);
+      setHistoryTickets(recentHistory);
     } catch (error: any) {
       const message =
         typeof error?.message === 'string' && error.message !== ''
@@ -253,46 +269,78 @@ const MisTickets: React.FC = () => {
                 </div>
                 <h2>Sin tickets disponibles</h2>
                 <p>
-                  Aún no tenés tickets disponibles. Cuando alquiles una cancha, recibirás uno automáticamente.
+                  Aún no tenés tickets disponibles. Comunicate con el personal para obtener uno.
                 </p>
               </section>
             )
           )}
 
           {!isLoading && !errorMessage && activeTickets.length > 1 && (
-            <section className="history-section">
-              <h2 className="section-title">Otros tickets activos</h2>
+            <section className="ticket-section">
+              <h2 className="section-title">Otro ticket disponible</h2>
               {activeTickets.slice(1).map((ticket) => (
                 <IonCard
                   key={ticket.id}
-                  className="ticket-card ticket-card--compact ticket-card--active"
-                  button
+                  className={`ticket-card ${
+                    ticket.status === 'valido' ? 'ticket-card--active' : 'ticket-card--used'
+                  }`}
                   onClick={() => handleOpenModal(ticket)}
+                  button
                 >
                   <IonCardHeader>
-                    <IonCardTitle>{ticket.code}</IonCardTitle>
-                    <IonCardSubtitle>Vence: {ticket.expiresAt}</IonCardSubtitle>
+                    <IonCardTitle>Bebida gratuita</IonCardTitle>
+                    <IonCardSubtitle>{ticket.code}</IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
                     <div className="ticket-status">
-                      <IonBadge color="success">Válido</IonBadge>
+                      <IonBadge color={ticket.status === 'valido' ? 'success' : 'medium'}>
+                        {ticket.status === 'valido' ? 'Válido' : 'Usado / Expirado'}
+                      </IonBadge>
                       <IonText className="ticket-id">{ticket.id}</IonText>
                     </div>
+                    <p className="ticket-description">Ticket válido por una bebida gratuita.</p>
+                    <div className="ticket-dates">
+                      <span>
+                        <IonIcon icon={timeOutline} />
+                        <strong>Emitido:</strong> {ticket.issuedAt}
+                      </span>
+                      <span>
+                        <IonIcon icon={timeOutline} />
+                        <strong>Vence:</strong> {ticket.expiresAt}
+                      </span>
+                    </div>
+                    <div
+                      className={`qr-placeholder ${
+                        ticket.status !== 'valido' ? 'qr-placeholder--disabled' : ''
+                      }`}
+                    >
+                      {ticket.status === 'valido' ? (
+                        <QRCode value={ticket.code} size={128} />
+                      ) : (
+                        <IonIcon icon={qrCodeOutline} />
+                      )}
+                    </div>
+                    <IonButton
+                      expand="block"
+                      color="light"
+                      fill="clear"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleOpenModal(ticket);
+                      }}
+                    >
+                      Ampliar QR
+                    </IonButton>
                   </IonCardContent>
                 </IonCard>
               ))}
             </section>
           )}
 
-          <section className="history-section">
-            <h2 className="section-title">Historial de tickets</h2>
-
-            {isLoading ? (
-              <IonText color="medium">Cargando historial...</IonText>
-            ) : historyTickets.length === 0 ? (
-              <IonText color="medium">No hay tickets utilizados todavía.</IonText>
-            ) : (
-              historyTickets.map((ticket) => (
+          {!isLoading && !errorMessage && historyTickets.length > 0 && (
+            <section className="history-section">
+              <h2 className="section-title">Historial de tickets</h2>
+              {historyTickets.map((ticket) => (
                 <IonCard
                   key={ticket.id}
                   className={`ticket-card ticket-card--compact ${
@@ -328,9 +376,9 @@ const MisTickets: React.FC = () => {
                     </div>
                   </IonCardContent>
                 </IonCard>
-              ))
-            )}
-          </section>
+              ))}
+            </section>
+          )}
         </div>
 
         <IonModal isOpen={isModalOpen} onDidDismiss={handleCloseModal} className="ticket-modal">

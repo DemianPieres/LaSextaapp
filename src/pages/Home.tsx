@@ -10,12 +10,17 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { calendar, download, notifications } from 'ionicons/icons';
 import EventCard from '../components/EventCard';
+import EventCalendar from '../components/EventCalendar';
+import NotificationsPanel from '../components/NotificationsPanel';
 import {
   fetchEvents,
   subscribeToEventStream,
   type EventDto,
   type EventStreamMessage,
 } from '../api/events';
+import { useAuth } from '../context/AuthContext';
+import { getUnreadNotificationsCount, subscribeToNotifications } from '../api/notifications';
+import { scheduleLocalNotification } from '../utils/notifications';
 import './Home.css';
 
 const resolveErrorMessage = (error: unknown, fallback: string): string => {
@@ -36,9 +41,13 @@ const sortEvents = (events: EventDto[]): EventDto[] => {
 };
 
 const Home: React.FC = () => {
+  const { session } = useAuth();
   const [events, setEvents] = useState<EventDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const applyStreamMessage = useCallback((message: EventStreamMessage) => {
     switch (message.type) {
@@ -47,6 +56,14 @@ const Home: React.FC = () => {
         break;
       case 'created':
         setEvents((prev) => sortEvents([...prev.filter((event) => event.id !== message.event.id), message.event]));
+        // Mostrar notificación push cuando se crea un nuevo evento
+        if (message.event) {
+          scheduleLocalNotification({
+            title: '¡Nuevo Evento Disponible!',
+            body: `Se ha publicado un nuevo evento: ${message.event.titulo}`,
+            id: Date.now(),
+          });
+        }
         break;
       case 'updated':
         setEvents((prev) =>
@@ -100,22 +117,70 @@ const Home: React.FC = () => {
     };
   }, [applyStreamMessage]);
 
+  // Cargar y actualizar contador de notificaciones
+  useEffect(() => {
+    if (!session || session.type !== 'user') return;
+
+    const loadUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationsCount(session.token);
+        setUnreadCount(count);
+      } catch (error) {
+        console.error('Error al cargar contador de notificaciones:', error);
+      }
+    };
+
+    void loadUnreadCount();
+
+    // Suscribirse a actualizaciones de notificaciones
+    const unsubscribe = subscribeToNotifications(session.token, (notification) => {
+      setUnreadCount((prev) => prev + 1);
+      // Mostrar notificación push
+      scheduleLocalNotification({
+        title: notification.titulo,
+        body: notification.mensaje,
+        id: Date.now(),
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [session]);
+
+  // Recargar contador cuando se cierra el panel de notificaciones
+  useEffect(() => {
+    if (!isNotificationsOpen && session && session.type === 'user') {
+      const loadUnreadCount = async () => {
+        try {
+          const count = await getUnreadNotificationsCount(session.token);
+          setUnreadCount(count);
+        } catch (error) {
+          console.error('Error al cargar contador de notificaciones:', error);
+        }
+      };
+      void loadUnreadCount();
+    }
+  }, [isNotificationsOpen, session]);
+
   return (
     <IonPage className="page-with-shared-background">
       <IonHeader className="custom-header">
         <IonToolbar className="header-toolbar">
           <div className="header-content">
             <div className="logo-container">
-              <div className="logo-background-circle">
-                <img src="./logosexta.png" alt="La Sexta Logo" className="logo-image" />
-              </div>
+              <img src="./logonuevolasexta.png" alt="La Sexta Logo" className="logo-image" />
             </div>
             <div className="header-icons">
-              <IonIcon icon={download} className="header-icon" />
-              <IonIcon icon={calendar} className="header-icon" />
-              <div className="notification-container">
+              <IonIcon 
+                icon={calendar} 
+                className="header-icon calendar-icon" 
+                onClick={() => setIsCalendarOpen(true)}
+                style={{ cursor: 'pointer' }}
+              />
+              <div className="notification-container" onClick={() => setIsNotificationsOpen(true)} style={{ cursor: 'pointer' }}>
                 <IonIcon icon={notifications} className="header-icon" />
-                <span className="notification-badge">2</span>
+                {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
               </div>
             </div>
           </div>
@@ -140,6 +205,15 @@ const Home: React.FC = () => {
             events.map((event) => <EventCard key={event.id} event={event} mode="user" />)
           )}
         </div>
+        <EventCalendar 
+          isOpen={isCalendarOpen} 
+          onClose={() => setIsCalendarOpen(false)}
+          events={events}
+        />
+        <NotificationsPanel
+          isOpen={isNotificationsOpen}
+          onClose={() => setIsNotificationsOpen(false)}
+        />
       </IonContent>
     </IonPage>
   );

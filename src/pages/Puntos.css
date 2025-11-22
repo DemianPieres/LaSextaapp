@@ -118,47 +118,130 @@
   padding-bottom: 120px;
 }
 
-/* ===== BOTÓN CANJEAR ===== */
+/* ===== PREMIOS ===== */
 
-.puntos-redeem-btn {
-  width: 100%;
-  background: rgba(60, 60, 65, 0.9);
-  border: none;
-  border-radius: 12px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+.puntos-rewards-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 24px 0;
+  text-align: left;
+}
+
+.puntos-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
   margin-bottom: 32px;
 }
 
-.puntos-redeem-btn:active {
-  transform: scale(0.98);
-  background: rgba(70, 70, 75, 0.9);
+.puntos-reward-card {
+  background: rgba(40, 40, 45, 0.9);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  backdrop-filter: blur(10px);
 }
 
-.puntos-redeem-btn span {
-  font-size: 16px;
-  font-weight: 500;
-  color: #FFC107;
+.puntos-reward-card.can-redeem {
+  border-color: rgba(255, 193, 7, 0.3);
 }
 
-.puntos-redeem-icon {
-  width: 36px;
-  height: 36px;
-  background: #FFC107;
-  border-radius: 50%;
+.puntos-reward-card.can-redeem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
+  border-color: rgba(255, 193, 7, 0.6);
+}
+
+.puntos-reward-card.cannot-redeem {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.puntos-reward-image {
+  width: 100%;
+  height: 180px;
+  background: rgba(60, 60, 65, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
-.puntos-redeem-icon ion-icon {
+.puntos-reward-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.puntos-reward-content {
+  padding: 20px;
+}
+
+.puntos-reward-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.puntos-reward-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.puntos-reward-points {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 8px;
+}
+
+.puntos-reward-points-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.puntos-reward-points-value {
   font-size: 20px;
+  font-weight: 700;
+  color: #FFC107;
+}
+
+.puntos-reward-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #FFC107;
+  border-radius: 8px;
   color: #1a1a1a;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.puntos-reward-action ion-icon {
+  font-size: 20px;
+}
+
+.puntos-reward-disabled {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(100, 100, 105, 0.5);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ===== SECCIÓN MOVIMIENTOS ===== */

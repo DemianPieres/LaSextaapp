@@ -10,6 +10,10 @@
   --color: white;
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  position: relative;
+  min-height: 60px;
+  max-height: 70px;
 }
 
 .header-toolbar {
@@ -17,71 +21,68 @@
   --color: white;
   padding: 0;
   backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1001;
+  min-height: 60px;
+  max-height: 70px;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 8px 20px;
   width: 100%;
+  min-height: 60px;
+  max-height: 70px;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-}
-
-/* Logo styles con círculo blanco de fondo */
-.logo-background-circle {
-  width: 60px;
-  height: 60px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
   position: relative;
-}
-
-.logo-background-circle:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.logo-background-circle::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), transparent, rgba(255, 255, 255, 0.3));
-  z-index: -1;
-}
-
-.logo-text {
-  color: #000000;
-  font-weight: bold;
-  font-size: 18px;
-  font-family: 'Arial', sans-serif;
+  z-index: 1002;
 }
 
 .logo-image {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  display: block;
+  flex-shrink: 0;
+  animation: logoVibration 5s infinite;
 }
 
 .logo-image:hover {
-  transform: scale(1.02);
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  transform: scale(1.05);
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+  animation-play-state: paused;
+}
+
+@keyframes logoVibration {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  2% {
+    transform: translateX(-2px) translateY(1px) rotate(-1deg);
+  }
+  4% {
+    transform: translateX(2px) translateY(-1px) rotate(1deg);
+  }
+  6% {
+    transform: translateX(-1px) translateY(2px) rotate(-0.5deg);
+  }
+  8% {
+    transform: translateX(1px) translateY(-2px) rotate(0.5deg);
+  }
+  10% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  10.01%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
 }
 
 .header-icons {
@@ -94,6 +95,15 @@
   font-size: 20px;
   color: white;
   cursor: pointer;
+}
+
+.calendar-icon {
+  transition: all 0.3s ease;
+}
+
+.calendar-icon:hover {
+  color: #22c55e;
+  transform: scale(1.1);
 }
 
 .notification-container {
@@ -146,7 +156,6 @@
   z-index: 2;
   padding: 20px;
   padding-bottom: 100px; /* Space for bottom navigation */
-  backdrop-filter: blur(2px);
 }
 
 .events-feedback {

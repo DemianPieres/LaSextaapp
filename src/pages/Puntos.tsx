@@ -1,12 +1,11 @@
 import { IonContent, IonIcon, IonModal, IonPage, IonSpinner, IonText, useIonToast } from '@ionic/react';
-import { cashOutline, closeOutline, swapVerticalOutline } from 'ionicons/icons';
+import { closeOutline, giftOutline, swapVerticalOutline } from 'ionicons/icons';
 import { useCallback, useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { useAuth } from '../context/AuthContext';
 import { fetchUserPoints, fetchUserMovements, generateRedeemCode, type PointsMovement } from '../api/points';
+import { fetchRewards, type RewardDto } from '../api/rewards';
 import './Puntos.css';
-
-const MIN_POINTS_TO_REDEEM = 25;
 
 const Puntos: React.FC = () => {
   const { session } = useAuth();
@@ -15,11 +14,15 @@ const Puntos: React.FC = () => {
 
   const [points, setPoints] = useState<number>(0);
   const [movements, setMovements] = useState<PointsMovement[]>([]);
+  const [rewards, setRewards] = useState<RewardDto[]>([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(true);
   const [isLoadingMovements, setIsLoadingMovements] = useState(false);
+  const [isLoadingRewards, setIsLoadingRewards] = useState(false);
 
   const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState<string | null>(null);
+  const [selectedReward, setSelectedReward] = useState<RewardDto | null>(null);
+  const [puntosACanjear, setPuntosACanjear] = useState<number>(0);
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
 
   const loadPoints = useCallback(async () => {
@@ -48,10 +51,28 @@ const Puntos: React.FC = () => {
     }
   }, [token]);
 
+  const loadRewards = useCallback(async () => {
+    try {
+      setIsLoadingRewards(true);
+      const fetchedRewards = await fetchRewards();
+      setRewards(fetchedRewards);
+    } catch (error) {
+      console.error('Error al cargar premios:', error);
+      presentToast({
+        message: 'Error al cargar los premios disponibles.',
+        duration: 2500,
+        color: 'danger',
+      });
+    } finally {
+      setIsLoadingRewards(false);
+    }
+  }, [presentToast]);
+
   useEffect(() => {
     void loadPoints();
     void loadMovements();
-  }, [loadPoints, loadMovements]);
+    void loadRewards();
+  }, [loadPoints, loadMovements, loadRewards]);
 
   // Recargar puntos cada 10 segundos para actualización en tiempo real
   useEffect(() => {
@@ -64,11 +85,13 @@ const Puntos: React.FC = () => {
     return () => clearInterval(interval);
   }, [token, loadPoints]);
 
-  const handleGenerateRedeemCode = async () => {
-    if (!token || points < MIN_POINTS_TO_REDEEM) {
+  const handleRedeemReward = async (reward: RewardDto) => {
+    if (!token) return;
+
+    if (points < reward.puntosRequeridos) {
       presentToast({
-        message: `Necesitas al menos ${MIN_POINTS_TO_REDEEM} puntos para canjear.`,
-        duration: 2500,
+        message: `No tenés suficientes puntos. Necesitás ${reward.puntosRequeridos} puntos.`,
+        duration: 3000,
         color: 'warning',
       });
       return;
@@ -76,8 +99,10 @@ const Puntos: React.FC = () => {
 
     try {
       setIsGeneratingCode(true);
-      const response = await generateRedeemCode(token, points);
+      const response = await generateRedeemCode(token, reward.id);
       setRedeemCode(response.codigo);
+      setSelectedReward(reward);
+      setPuntosACanjear(response.puntosACanjear);
       setIsRedeemModalOpen(true);
       presentToast({
         message: 'Código de canje generado. Válido por 15 minutos.',
@@ -98,11 +123,11 @@ const Puntos: React.FC = () => {
   const closeRedeemModal = () => {
     setIsRedeemModalOpen(false);
     setRedeemCode(null);
+    setSelectedReward(null);
+    setPuntosACanjear(0);
     void loadPoints();
     void loadMovements();
   };
-
-  const canRedeem = points >= MIN_POINTS_TO_REDEEM;
 
   return (
     <IonPage className="page-with-shared-background">
@@ -133,20 +158,58 @@ const Puntos: React.FC = () => {
             </div>
           </div>
 
-          {/* Botón canjear */}
+          {/* Premios disponibles */}
           <div className="puntos-content">
-            <button
-              className={`puntos-redeem-btn ${!canRedeem ? 'disabled' : ''}`}
-              onClick={handleGenerateRedeemCode}
-              disabled={!canRedeem || isGeneratingCode}
-            >
-              <span>
-                {isGeneratingCode ? 'Generando...' : canRedeem ? 'Canjear Mis Puntos' : `Mínimo ${MIN_POINTS_TO_REDEEM} puntos`}
-              </span>
-              <div className="puntos-redeem-icon">
-                <IonIcon icon={cashOutline} />
+            <h2 className="puntos-rewards-title">Premios disponibles</h2>
+            
+            {isLoadingRewards ? (
+              <div className="puntos-loading-state">
+                <IonSpinner />
+                <IonText>Cargando premios...</IonText>
               </div>
-            </button>
+            ) : rewards.length === 0 ? (
+              <div className="puntos-empty-state">
+                <IonIcon icon={giftOutline} size="large" />
+                <p className="puntos-empty-text">No hay premios disponibles en este momento</p>
+              </div>
+            ) : (
+              <div className="puntos-rewards-grid">
+                {rewards.map((reward) => {
+                  const canRedeem = points >= reward.puntosRequeridos;
+                  return (
+                    <div
+                      key={reward.id}
+                      className={`puntos-reward-card ${canRedeem ? 'can-redeem' : 'cannot-redeem'}`}
+                      onClick={() => canRedeem && !isGeneratingCode && handleRedeemReward(reward)}
+                    >
+                      {reward.imagenUrl && (
+                        <div className="puntos-reward-image">
+                          <img src={reward.imagenUrl} alt={reward.nombre} />
+                        </div>
+                      )}
+                      <div className="puntos-reward-content">
+                        <h3 className="puntos-reward-name">{reward.nombre}</h3>
+                        <p className="puntos-reward-description">{reward.descripcion}</p>
+                        <div className="puntos-reward-points">
+                          <span className="puntos-reward-points-label">Puntos requeridos:</span>
+                          <span className="puntos-reward-points-value">{reward.puntosRequeridos}</span>
+                        </div>
+                        {canRedeem ? (
+                          <div className="puntos-reward-action">
+                            <IonIcon icon={giftOutline} />
+                            <span>Canjear</span>
+                          </div>
+                        ) : (
+                          <div className="puntos-reward-disabled">
+                            <span>Te faltan {reward.puntosRequeridos - points} puntos</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Últimos movimientos */}
             <div className="puntos-movements-section">
@@ -195,13 +258,16 @@ const Puntos: React.FC = () => {
               <IonIcon icon={closeOutline} />
             </button>
             <h2 className="puntos-modal-title">Código de Canje</h2>
+            {selectedReward && (
+              <p className="puntos-modal-subtitle">Premio: {selectedReward.nombre}</p>
+            )}
             <p className="puntos-modal-subtitle">Mostrá este código al administrador</p>
             {redeemCode && (
               <div className="puntos-qr-container">
                 <QRCode value={redeemCode} size={256} />
                 <p className="puntos-modal-code">{redeemCode}</p>
                 <p className="puntos-modal-info">Válido por 15 minutos</p>
-                <p className="puntos-modal-points">Canjeando: {points} puntos</p>
+                <p className="puntos-modal-points">Canjeando: {puntosACanjear} puntos</p>
               </div>
             )}
           </div>
@@ -212,8 +278,3 @@ const Puntos: React.FC = () => {
 };
 
 export default Puntos;
-
-
-
-
-

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Logo de La Sexta centrado y escalado para ocupar más espacio -->
+    <item android:gravity="center">
+        <bitmap
+            android:src="@drawable/logosexta"
+            android:gravity="center" />
+    </item>
+</layer-list>
+
