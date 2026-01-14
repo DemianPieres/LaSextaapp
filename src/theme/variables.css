@@ -1,0 +1,234 @@
+/* For information on how to create your own theme, please see:
+http://ionicframework.com/docs/theming/ */
+
+/* ===== VARIABLES RESPONSIVE GLOBALES ===== */
+:root {
+  /* Tamaños de fuente responsive */
+  --font-xs: clamp(0.75rem, 2vw, 0.875rem);
+  --font-small: clamp(0.875rem, 2.5vw, 1rem);
+  --font-normal: clamp(1rem, 3vw, 1.125rem);
+  --font-medium: clamp(1.125rem, 3.5vw, 1.25rem);
+  --font-big: clamp(1.25rem, 4vw, 1.5rem);
+  --font-large: clamp(1.5rem, 5vw, 2rem);
+  --font-xl: clamp(2rem, 6vw, 2.5rem);
+
+  /* Espaciado responsive */
+  --spacing-xs: clamp(0.25rem, 1vw, 0.5rem);
+  --spacing-sm: clamp(0.5rem, 1.5vw, 0.75rem);
+  --spacing: clamp(0.75rem, 2vw, 1rem);
+  --spacing-md: clamp(1rem, 2.5vw, 1.5rem);
+  --spacing-lg: clamp(1.5rem, 3vw, 2rem);
+  --spacing-xl: clamp(2rem, 4vw, 3rem);
+
+  /* Padding responsive */
+  --padding-xs: clamp(0.5rem, 1.5vw, 0.75rem);
+  --padding-sm: clamp(0.75rem, 2vw, 1rem);
+  --padding: clamp(1rem, 2.5vw, 1.5rem);
+  --padding-md: clamp(1.5rem, 3vw, 2rem);
+  --padding-lg: clamp(2rem, 4vw, 3rem);
+
+  /* Margin responsive */
+  --margin-xs: clamp(0.25rem, 1vw, 0.5rem);
+  --margin-sm: clamp(0.5rem, 1.5vw, 0.75rem);
+  --margin: clamp(0.75rem, 2vw, 1rem);
+  --margin-md: clamp(1rem, 2.5vw, 1.5rem);
+  --margin-lg: clamp(1.5rem, 3vw, 2rem);
+
+  /* Border radius responsive */
+  --radius-sm: clamp(0.5rem, 1.5vw, 0.75rem);
+  --radius: clamp(0.75rem, 2vw, 1rem);
+  --radius-md: clamp(1rem, 2.5vw, 1.5rem);
+  --radius-lg: clamp(1.5rem, 3vw, 2rem);
+  --radius-xl: clamp(2rem, 4vw, 2.5rem);
+
+  /* Safe areas */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* Icon sizes responsive */
+  --icon-xs: clamp(1rem, 3vw, 1.25rem);
+  --icon-sm: clamp(1.25rem, 3.5vw, 1.5rem);
+  --icon: clamp(1.5rem, 4vw, 1.75rem);
+  --icon-md: clamp(1.75rem, 4.5vw, 2rem);
+  --icon-lg: clamp(2rem, 5vw, 2.5rem);
+  --icon-xl: clamp(2.5rem, 6vw, 3rem);
+
+  /* App Colors */
+  --ion-color-primary: #ffeb3b;
+  --ion-color-primary-rgb: 255, 235, 59;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #e0cf33;
+  --ion-color-primary-tint: #ffed4f;
+
+  --ion-color-secondary: #ff6b35;
+  --ion-color-secondary-rgb: 255, 107, 53;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #e05e2f;
+  --ion-color-secondary-tint: #ff7a49;
+
+  --ion-color-tertiary: #5260ff;
+  --ion-color-tertiary-rgb: 82, 96, 255;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #4854e0;
+  --ion-color-tertiary-tint: #6370ff;
+
+  --ion-color-success: #2dd36f;
+  --ion-color-success-rgb: 45, 211, 111;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #28ba62;
+  --ion-color-success-tint: #42d77d;
+
+  --ion-color-warning: #ffc409;
+  --ion-color-warning-rgb: 255, 196, 9;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0ad08;
+  --ion-color-warning-tint: #ffca22;
+
+  --ion-color-danger: #eb445a;
+  --ion-color-danger-rgb: 235, 68, 90;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #cf3c4f;
+  --ion-color-danger-tint: #ed576b;
+
+  --ion-color-dark: #222428;
+  --ion-color-dark-rgb: 34, 36, 40;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1e2023;
+  --ion-color-dark-tint: #383a3e;
+
+  --ion-color-medium: #92949c;
+  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #808289;
+  --ion-color-medium-tint: #9d9fa6;
+
+  --ion-color-light: #f4f5f8;
+  --ion-color-light-rgb: 244, 245, 248;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d7d8da;
+  --ion-color-light-tint: #f5f6f9;
+
+  /* App Background */
+  --ion-background-color: #000000;
+  --ion-background-color-rgb: 0, 0, 0;
+  
+  /* Background Image */
+  --ion-background-image: url('./background.jpeg');
+
+  /* Text Colors */
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  /* Card Background */
+  --ion-card-background: #ffffff;
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #000000;
+    --ion-background-color-rgb: 0, 0, 0;
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+  }
+}
+
+/* Global Background Styles */
+ion-app {
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.8) 100%
+    ),
+    url('./background.jpeg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+ion-content {
+  --background: transparent;
+}
+
+ion-page {
+  background: transparent;
+}
+
+/* Responsive base font size */
+html {
+  font-size: clamp(14px, 4vw, 16px);
+}
+
+/* Ensure images are responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Helper classes for common flexbox patterns */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.gap-xs { gap: var(--spacing-xs); }
+.gap-sm { gap: var(--spacing-sm); }
+.gap { gap: var(--spacing); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb { margin-bottom: var(--spacing); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+.mt-xs { margin-top: var(--spacing-xs); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt { margin-top: var(--spacing); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-auto { margin-left: auto; }
+
+.p-xs { padding: var(--padding-xs); }
+.p-sm { padding: var(--padding-sm); }
+.p { padding: var(--padding); }
+.p-md { padding: var(--padding-md); }
+.p-lg { padding: var(--padding-lg); }

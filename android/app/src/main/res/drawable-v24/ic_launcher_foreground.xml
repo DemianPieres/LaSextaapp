@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- LogoHome centrado y escalado para ocupar más espacio -->
+    <group
+        android:scaleX="0.9"
+        android:scaleY="0.9"
+        android:translateX="5.4"
+        android:translateY="5.4">
+        <bitmap
+            android:src="@drawable/logohome"
+            android:gravity="center"
+            android:tileMode="disabled" />
+    </group>
+</vector>

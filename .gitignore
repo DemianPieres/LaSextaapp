@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.npm
+
+# Build outputs
+dist/
+build/
+*.apk
+*.aab
+
+# Android build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/captures/
+android/.idea/
+android/*.iml
+android/local.properties
+
+# Keystore (IMPORTANTE: No subir a repositorios públicos)
+*.keystore
+*.jks
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test
+coverage/
+cypress/screenshots/
+cypress/videos/
+
+# Capacitor
+ios/
+android/app/src/main/assets/public/
+
+# Misc
+.cache/
+.temp/
+*.tmp

@@ -1,0 +1,106 @@
+warning: in the working copy of 'server/src/routes/admin.ts', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/server/src/routes/admin.ts b/server/src/routes/admin.ts[m
+[1mindex ad87a77..0fc3d31 100644[m
+[1m--- a/server/src/routes/admin.ts[m
+[1m+++ b/server/src/routes/admin.ts[m
+[36m@@ -8,7 +8,6 @@[m [mimport { signAdminToken } from '../utils/jwt.js';[m
+ import { verifyPassword } from '../utils/password.js';[m
+ import { computeExpirationDate, generateTicketCode } from '../utils/tickets.js';[m
+ import { adminEventsRouter } from './events.js';[m
+[31m-import { createNotification } from './notifications.js';[m
+ import { adminBenefitsRouter } from './benefits.js';[m
+ import { adminPointsRouter } from './points.js';[m
+ [m
+[36m@@ -276,25 +275,6 @@[m [madminRouter.post([m
+       const adminId = req.admin ? parseObjectId(req.admin.userId, 'adminId') : undefined;[m
+       const ticketId = new ObjectId();[m
+ [m
+[31m-      // Obtener todos los tickets del usuario ordenados por fecha de creación (más antiguos primero)[m
+[31m-      const existingTickets = await db[m
+[31m-        .collection<TicketDocument>("Tickets")[m
+[31m-        .find({ usuarioId })[m
+[31m-        .sort({ fechaCreacion: 1 })[m
+[31m-        .toArray();[m
+[31m-[m
+[31m-      // Si ya hay 2 o más tickets, eliminar los más antiguos para mantener solo 2[m
+[31m-      if (existingTickets.length >= 2) {[m
+[31m-        // Eliminar todos excepto el más reciente (mantener solo 1, luego agregamos el nuevo = 2 total)[m
+[31m-        const ticketsToDelete = existingTickets.slice(0, existingTickets.length - 1);[m
+[31m-        if (ticketsToDelete.length > 0) {[m
+[31m-          const idsToDelete = ticketsToDelete.map((t) => t._id);[m
+[31m-          await db.collection<TicketDocument>("Tickets").deleteMany({[m
+[31m-            _id: { $in: idsToDelete },[m
+[31m-          });[m
+[31m-        }[m
+[31m-      }[m
+[31m-[m
+       const ticketDocument: TicketDocument = {[m
+         _id: ticketId,[m
+         usuarioId,[m
+[36m@@ -363,15 +343,6 @@[m [madminRouter.post([m
+         description: 'Ticket válido por una bebida gratuita.',[m
+       });[m
+ [m
+[31m-      // Crear notificación para el usuario[m
+[31m-      await createNotification([m
+[31m-        usuarioId,[m
+[31m-        'ticket',[m
+[31m-        '¡Nuevo Ticket Recibido!',[m
+[31m-        `Has recibido un nuevo ticket. Código: ${ticket.codigoQR}`,[m
+[31m-        { ticketId: ticketObjectId.toHexString() }[m
+[31m-      );[m
+[31m-[m
+       res.json({ message: 'Ticket enviado correctamente.' });[m
+     } catch (error) {[m
+       next(error);[m
+[36m@@ -419,47 +390,22 @@[m [madminRouter.post([m
+   '/tickets/validate/:codigoQR',[m
+   async (req: AdminRequest, res: Response, next: NextFunction) => {[m
+     try {[m
+[31m-      // Decodificar el código QR de la URL[m
+[31m-      let codigoQR = decodeURIComponent(req.params.codigoQR);[m
+[32m+[m[32m      const codigoQR = req.params.codigoQR;[m
+ [m
+       if (typeof codigoQR !== 'string' || codigoQR.trim() === '') {[m
+         res.status(400).json({ message: 'Código QR inválido.' });[m
+         return;[m
+       }[m
+ [m
+[31m-      codigoQR = codigoQR.trim();[m
+[31m-[m
+       const db = await connectToDatabase();[m
+[31m-      const now = new Date();[m
+[31m-      [m
+[31m-      // Buscar el ticket (insensible a mayúsculas/minúsculas)[m
+[31m-      const ticket = await db[m
+[31m-        .collection<TicketDocument>("Tickets")[m
+[31m-        .findOne({ [m
+[31m-          codigoQR: { $regex: new RegExp(`^${codigoQR.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },[m
+[31m-          estado: 'valido' [m
+[31m-        });[m
+[31m-[m
+[31m-      if (!ticket) {[m
+[31m-        res.status(404).json({ message: 'Código QR inválido o ya utilizado.' });[m
+[31m-        return;[m
+[31m-      }[m
+[31m-[m
+[31m-      // Verificar que no haya vencido[m
+[31m-      if (ticket.fechaVencimiento && new Date(ticket.fechaVencimiento) <= now) {[m
+[31m-        res.status(400).json({ message: 'El ticket ha expirado.' });[m
+[31m-        return;[m
+[31m-      }[m
+[31m-[m
+[31m-      // Actualizar el ticket usando el código original (case-sensitive en la BD)[m
+       const result = await db[m
+         .collection<TicketDocument>("Tickets")[m
+         .findOneAndUpdate([m
+[31m-          { _id: ticket._id, estado: 'valido' },[m
+[32m+[m[32m          { codigoQR, estado: 'valido' },[m
+           {[m
+             $set: {[m
+               estado: 'usado',[m
+[31m-              fechaUso: now,[m
+[32m+[m[32m              fechaUso: new Date(),[m
+               emitidoPor: req.admin ? parseObjectId(req.admin.userId, 'adminId') : undefined,[m
+             },[m
+           },[m

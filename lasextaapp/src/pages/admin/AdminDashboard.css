@@ -1,0 +1,420 @@
+.admin-validation-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  width: 100%;
+}
+
+.admin-validation-actions {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-ticket-section {
+  margin-bottom: var(--margin-md);
+  width: 100%;
+}
+
+.admin-history-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  margin-bottom: var(--spacing);
+  flex-wrap: wrap;
+}
+
+.admin-history-header h2 {
+  margin: 0;
+}
+
+.admin-ticket-card {
+  --min-height: clamp(3.5rem, 10vw, 4.5rem);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing);
+  box-shadow: 0 clamp(0.3rem, 1vw, 0.375rem) clamp(1rem, 3vw, 1.25rem) rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(clamp(15px, 4vw, 20px));
+  width: 100%;
+}
+
+.admin-ticket-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .admin-ticket-actions {
+    flex-direction: row;
+  }
+}
+
+.admin-section-segment {
+  margin: var(--margin-md) 0;
+  width: 100%;
+}
+
+.admin-events-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--margin-md);
+  margin-top: var(--spacing-sm);
+  width: 100%;
+}
+
+.admin-events-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  background: rgba(255, 255, 255, 0.05);
+  padding: var(--padding);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 clamp(0.4rem, 1.2vw, 0.5rem) clamp(1rem, 3vw, 1.5rem) rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(clamp(10px, 2.5vw, 12px));
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-events-toolbar h2 {
+  margin: 0;
+  font-size: var(--font-large);
+  font-weight: 600;
+}
+
+.admin-events-toolbar p {
+  margin: var(--spacing-xs) 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  font-size: var(--font-normal);
+}
+
+.admin-events-actions {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-events-feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+  min-height: clamp(12rem, 35vw, 15rem);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-lg);
+  padding: var(--padding-lg) var(--spacing);
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  width: 100%;
+}
+
+.admin-events-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--spacing);
+}
+
+@media (min-width: 992px) {
+  .admin-events-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.admin-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  width: 100%;
+}
+
+.admin-benefit-card {
+  background: rgba(40, 40, 45, 0.95);
+  border-radius: var(--radius);
+  padding: var(--padding);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 clamp(0.2rem, 0.6vw, 0.25rem) clamp(0.8rem, 2.4vw, 1rem) rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-benefit-main {
+  display: flex;
+  gap: var(--spacing);
+  align-items: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-benefit-logo {
+  width: clamp(4rem, 13vw, 5rem);
+  height: clamp(4rem, 13vw, 5rem);
+  min-width: clamp(4rem, 13vw, 5rem);
+  min-height: clamp(4rem, 13vw, 5rem);
+  background: white;
+  border-radius: var(--radius);
+  padding: var(--spacing-sm);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-benefit-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.admin-benefit-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-benefit-content h3 {
+  font-size: var(--font-medium);
+  font-weight: 600;
+  color: white;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.admin-benefit-short {
+  font-size: var(--font-normal);
+  color: #FFC107;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: 500;
+}
+
+.admin-benefit-sponsor {
+  font-size: var(--font-small);
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 var(--spacing) 0;
+}
+
+.admin-benefit-sponsor strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-benefit-actions {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .admin-benefit-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-benefit-actions {
+    flex-shrink: 0;
+    width: auto;
+  }
+}
+
+.admin-users-filter-input {
+  --background: rgba(15, 23, 42, 0.9);
+  --color: #f9fafb;
+  --placeholder-color: rgba(148, 163, 184, 0.8);
+  --padding-start: var(--spacing);
+  --padding-end: var(--spacing);
+  border-radius: 999px;
+  border: 1px solid rgba(31, 41, 55, 0.95);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 clamp(0.4rem, 1.2vw, 0.5rem) clamp(1rem, 3vw, 1.25rem) rgba(0, 0, 0, 0.55);
+  width: 100%;
+  font-size: var(--font-normal);
+  min-height: clamp(2.5rem, 7vw, 3rem);
+}
+
+.admin-points-user-item {
+  --inner-padding-start: var(--spacing);
+  --inner-padding-end: var(--spacing-sm);
+  align-items: center;
+  width: 100%;
+}
+
+.admin-points-user-label h2,
+.admin-points-user-label p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--font-normal);
+}
+
+.admin-points-user-button {
+  white-space: nowrap;
+  min-width: clamp(6rem, 20vw, 8.125rem);
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-header {
+  --background: transparent;
+  --color: #ffffff;
+  position: relative;
+  z-index: 20;
+}
+
+.admin-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max(env(safe-area-inset-top), clamp(1.5rem, 4vw, 1.75rem));
+  background: #000000;
+  z-index: 21;
+}
+
+.admin-header-toolbar {
+  --background: rgba(0, 0, 0, 0.8);
+  --color: #ffffff;
+  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: clamp(4rem, 12vw, 5rem);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: calc(max(env(safe-area-inset-top), clamp(1.5rem, 4vw, 1.75rem)) + var(--spacing-sm)) var(--spacing) var(--margin-sm);
+}
+
+.admin-logout-button {
+  font-size: var(--font-normal);
+  min-height: clamp(2.5rem, 7vw, 3rem);
+}
+
+.admin-page .page-content {
+  --background: transparent;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: calc(var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+}
+
+.admin-page .tickets-wrapper {
+  position: relative;
+  z-index: 2;
+  padding: var(--padding-md) var(--padding) clamp(5rem, 18vw, 7.5rem);
+  color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding-md);
+  width: 100%;
+  max-width: min(70rem, 95vw);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.admin-page .tickets-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  text-align: left;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-page .tickets-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-page .tickets-heading h1 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-big);
+}
+
+.admin-page .tickets-heading p {
+  margin: 0;
+  font-size: var(--font-normal);
+}
+
+.admin-page .tickets-icon {
+  width: clamp(3rem, 10vw, 3.5rem);
+  height: clamp(3rem, 10vw, 3.5rem);
+  min-width: clamp(3rem, 10vw, 3.5rem);
+  min-height: clamp(3rem, 10vw, 3.5rem);
+  font-size: var(--icon-md);
+}
+
+.admin-page .section-title {
+  font-size: var(--font-medium);
+}
+
+.admin-page .ticket-card {
+  width: 100%;
+}
+
+.admin-page ion-grid {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-page ion-row {
+  margin: 0;
+  padding: 0;
+}
+
+.admin-page ion-col {
+  padding: var(--spacing);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .admin-page ion-col {
+    padding: var(--spacing-md);
+  }
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+  margin-top: var(--spacing);
+  padding: var(--spacing) 0;
+  flex-wrap: wrap;
+}
+
+.admin-points-user-item {
+  margin-bottom: var(--spacing-xs);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+
+.admin-points-user-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-points-user-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-points-user-label h2 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-normal);
+  font-weight: 600;
+}
+
+.admin-points-user-label p {
+  margin: 0;
+  font-size: var(--font-small);
+  color: rgba(255, 255, 255, 0.7);
+  word-break: break-word;
+}

@@ -1,0 +1,27 @@
+#container {
+  text-align: center;
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  padding: var(--padding);
+  box-sizing: border-box;
+}
+
+#container strong {
+  font-size: var(--font-big);
+  line-height: 1.3;
+}
+
+#container p {
+  font-size: var(--font-normal);
+  line-height: 1.375;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}

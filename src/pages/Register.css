@@ -1,0 +1,340 @@
+/* ===== PANTALLA DE REGISTER - DISEÑO GLASSMORPHISM RESPONSIVE ===== */
+
+.auth-page {
+  --background: transparent;
+}
+
+.auth-content {
+  --background: transparent;
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: var(--padding);
+  padding-right: var(--padding);
+  box-sizing: border-box;
+}
+
+.status-spacer {
+  height: max(clamp(1.5rem, 4vw, 1.75rem), env(safe-area-inset-top, clamp(1.25rem, 3vw, 1.5rem)));
+  width: 100%;
+  pointer-events: none;
+}
+
+.background-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(clamp(1px, 0.3vw, 2px));
+  animation: float 8s ease-in-out infinite;
+}
+
+.particle-1 {
+  width: clamp(1rem, 3vw, 1.25rem);
+  height: clamp(1rem, 3vw, 1.25rem);
+  background: rgba(34, 197, 94, 0.6);
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+  animation-duration: 10s;
+}
+
+.particle-2 {
+  width: clamp(0.75rem, 2.5vw, 0.9375rem);
+  height: clamp(0.75rem, 2.5vw, 0.9375rem);
+  background: rgba(22, 163, 74, 0.6);
+  top: 20%;
+  right: 20%;
+  animation-delay: 2s;
+  animation-duration: 8s;
+}
+
+.particle-3 {
+  width: clamp(1.25rem, 4vw, 1.5625rem);
+  height: clamp(1.25rem, 4vw, 1.5625rem);
+  background: rgba(16, 185, 129, 0.4);
+  top: 60%;
+  left: 10%;
+  animation-delay: 4s;
+  animation-duration: 12s;
+}
+
+.particle-4 {
+  width: clamp(0.9rem, 3vw, 1.125rem);
+  height: clamp(0.9rem, 3vw, 1.125rem);
+  background: rgba(5, 150, 105, 0.5);
+  top: 70%;
+  right: 15%;
+  animation-delay: 1s;
+  animation-duration: 9s;
+}
+
+.particle-5 {
+  width: clamp(0.6rem, 2vw, 0.75rem);
+  height: clamp(0.6rem, 2vw, 0.75rem);
+  background: rgba(6, 182, 212, 0.7);
+  top: 30%;
+  left: 80%;
+  animation-delay: 3s;
+  animation-duration: 7s;
+}
+
+.particle-6 {
+  width: clamp(1.1rem, 3.5vw, 1.375rem);
+  height: clamp(1.1rem, 3.5vw, 1.375rem);
+  background: rgba(4, 120, 87, 0.4);
+  top: 80%;
+  left: 70%;
+  animation-delay: 5s;
+  animation-duration: 11s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(clamp(-1rem, -3vw, -1.25rem)) translateX(clamp(0.5rem, 1.5vw, 0.625rem)) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(clamp(-0.5rem, -1.5vw, -0.625rem)) translateX(clamp(-0.25rem, -0.8vw, -0.3125rem)) rotate(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(clamp(-1.5rem, -4vw, -1.875rem)) translateX(clamp(0.75rem, 2vw, 0.9375rem)) rotate(270deg);
+    opacity: 0.7;
+  }
+}
+
+.auth-card {
+  position: relative;
+  z-index: 10;
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(clamp(15px, 4vw, 20px));
+  border-radius: var(--radius-lg);
+  padding: var(--padding-lg) var(--padding);
+  margin: var(--padding-lg) auto var(--margin) auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 clamp(1rem, 3vw, 1.25rem) clamp(2rem, 5vw, 2.5rem) rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: min(400px, 90vw);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--padding);
+}
+
+.auth-title {
+  font-size: var(--font-xl);
+  font-weight: bold;
+  color: white;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.auth-subtitle {
+  font-size: var(--font-normal);
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--margin);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.input-label {
+  font-size: var(--font-normal);
+  font-weight: 500;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(40, 40, 40, 0.8);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0 var(--padding);
+  min-height: clamp(2.5rem, 7vw, 3rem);
+}
+
+.input-icon {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--icon);
+  margin-right: var(--spacing);
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.password-toggle {
+  cursor: pointer;
+  margin-right: 0;
+  margin-left: var(--spacing);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.auth-input {
+  flex: 1;
+  --background: transparent;
+  --color: white;
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: var(--font-normal);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-width: 0;
+}
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  margin-top: var(--spacing-sm);
+}
+
+.strength-bar {
+  flex: 1;
+  height: clamp(0.2rem, 0.6vw, 0.25rem);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: var(--radius-xs);
+  transition: all 0.3s ease;
+}
+
+.strength-text {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-width: clamp(3rem, 8vw, 3.125rem);
+}
+
+.auth-button {
+  margin-top: var(--spacing-sm);
+  min-height: clamp(2.5rem, 7vw, 3rem);
+  height: auto;
+  border-radius: var(--radius);
+  font-weight: bold;
+  font-size: var(--font-normal);
+  text-transform: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.primary-button {
+  --background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+  --color: white !important;
+  --border-radius: var(--radius) !important;
+  --box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 3vw, 1.25rem) rgba(34, 197, 94, 0.3) !important;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+}
+
+.primary-button:hover {
+  --box-shadow: 0 clamp(0.75rem, 2vw, 0.9375rem) clamp(1.25rem, 4vw, 1.5625rem) rgba(34, 197, 94, 0.4) !important;
+  transform: translateY(clamp(-0.1rem, -0.3vw, -0.125rem));
+  background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: var(--margin-md);
+}
+
+.auth-link-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--font-small);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+}
+
+.auth-link-button {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: var(--spacing-xs);
+  transition: color 0.3s ease;
+}
+
+.auth-link-button:hover {
+  color: #16a34a;
+  text-decoration: underline;
+}
+
+.register-helper-text {
+  font-size: var(--font-xs);
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+}
+
+@media (max-width: 480px) {
+  .auth-content {
+    padding-left: var(--padding-sm);
+    padding-right: var(--padding-sm);
+  }
+  
+  .auth-card {
+    margin: var(--margin) auto;
+    padding: var(--padding) var(--padding-md);
+  }
+  
+  .particle {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-content {
+    padding-left: var(--padding-xs);
+    padding-right: var(--padding-xs);
+  }
+  
+  .auth-card {
+    margin: var(--margin) auto;
+    padding: var(--padding-md) var(--padding);
+  }
+}
