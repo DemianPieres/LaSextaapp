@@ -513,3 +513,89 @@
     padding-bottom: clamp(4.5rem, 17vw, 6.875rem);
   }
 }
+
+/* ===== COMING SOON - PROXIMAMENTE ===== */
+
+.puntos-coming-soon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--padding-md);
+  padding-top: calc(var(--padding-md) + var(--safe-area-top));
+  padding-bottom: calc(var(--padding-md) + var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  box-sizing: border-box;
+}
+
+.puntos-coming-soon-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--spacing-md);
+  max-width: min(400px, 90vw);
+  padding: var(--padding-lg);
+  background: rgba(30, 30, 35, 0.85);
+  backdrop-filter: blur(clamp(15px, 4vw, 20px));
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 clamp(1rem, 3vw, 1.25rem) clamp(2.5rem, 7vw, 3.125rem) rgba(0, 0, 0, 0.4);
+}
+
+.puntos-coming-soon-icon {
+  width: clamp(5rem, 18vw, 6.25rem);
+  height: clamp(5rem, 18vw, 6.25rem);
+  min-width: clamp(5rem, 18vw, 6.25rem);
+  min-height: clamp(5rem, 18vw, 6.25rem);
+  background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(255, 193, 7, 0.4);
+  animation: pulse-icon 2s ease-in-out infinite;
+}
+
+.puntos-coming-soon-icon ion-icon {
+  font-size: clamp(2.5rem, 10vw, 3.125rem);
+  color: white;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(255, 193, 7, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 clamp(0.75rem, 2vw, 0.9375rem) clamp(2rem, 6vw, 2.5rem) rgba(255, 193, 7, 0.6);
+  }
+}
+
+.puntos-coming-soon-title {
+  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-weight: 800;
+  color: #FFC107;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: clamp(0.1rem, 0.3vw, 0.15rem);
+  text-shadow: 0 clamp(0.1rem, 0.3vw, 0.125rem) clamp(0.5rem, 1.5vw, 0.625rem) rgba(255, 193, 7, 0.3);
+}
+
+.puntos-coming-soon-text {
+  font-size: var(--font-medium);
+  font-weight: 500;
+  color: white;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.puntos-coming-soon-subtext {
+  font-size: var(--font-small);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.6;
+}
