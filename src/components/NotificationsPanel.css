@@ -1,3 +1,19 @@
+/* =====================================================
+   NOTIFICATIONS PANEL - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Modal de notificaciones con diseño glassmorphism.
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   
+   ===================================================== */
+
+/* ===========================================
+   MODAL BASE
+   =========================================== */
 .notifications-modal {
   --background: rgba(0, 0, 0, 0.9);
   --backdrop-opacity: 0.9;
@@ -11,11 +27,14 @@
   border-bottom: 1px solid rgba(34, 197, 94, 0.4);
 }
 
+/* ===========================================
+   HEADER
+   =========================================== */
 .notifications-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing) var(--spacing);
+  padding: var(--spacing);
   flex-wrap: wrap;
   gap: var(--spacing-sm);
 }
@@ -41,7 +60,7 @@
 
 .notifications-close-btn {
   background: rgba(15, 23, 42, 0.85);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   border: 1px solid rgba(148, 163, 184, 0.5);
   width: var(--icon-md);
   height: var(--icon-md);
@@ -58,12 +77,18 @@
   font-size: var(--icon);
 }
 
+/* ===========================================
+   CONTENT
+   =========================================== */
 .notifications-content {
   --background: radial-gradient(circle at top, #022c22 0, #000000 55%);
   padding: var(--spacing);
   color: #e5e7eb;
 }
 
+/* ===========================================
+   STATES (loading, empty)
+   =========================================== */
 .notifications-loading,
 .notifications-empty {
   display: flex;
@@ -71,28 +96,34 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  min-height: clamp(12rem, 35vw, 13.75rem);
+  min-height: 200px;
   text-align: center;
   color: #9ca3af;
   font-size: var(--font-normal);
 }
 
+/* ===========================================
+   LIST
+   =========================================== */
 .notifications-list {
   background: rgba(15, 23, 42, 0.9);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs);
+  padding: var(--spacing-xs);
   border: 1px solid rgba(31, 41, 55, 0.9);
-  box-shadow: 0 clamp(0.8rem, 2.4vw, 1rem) clamp(2rem, 6vw, 2.5rem) rgba(0, 0, 0, 0.9);
+  box-shadow: var(--shadow-xl);
   width: 100%;
 }
 
+/* ===========================================
+   ITEM
+   =========================================== */
 .notification-item {
   --background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), rgba(15, 23, 42, 0.96));
   --color: #f9fafb;
   margin: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius);
   border: 1px solid rgba(31, 41, 55, 0.9);
-  width: calc(100% - var(--spacing) * 2);
+  width: calc(100% - var(--spacing-md));
   box-sizing: border-box;
 }
 
@@ -115,6 +146,9 @@
   color: #9ca3af;
 }
 
+/* ===========================================
+   FOOTER
+   =========================================== */
 .notifications-footer {
   margin-top: var(--spacing);
 }
@@ -124,16 +158,19 @@
   --background-activated: #16a34a;
   --background-focused: #16a34a;
   --color: #000000;
-  --border-radius: 999px;
+  --border-radius: var(--radius-full);
   font-weight: 600;
   width: 100%;
-  min-height: clamp(2.5rem, 7vw, 3rem);
+  min-height: 48px;
   font-size: var(--font-normal);
 }
 
-@media (min-width: 600px) {
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
   .notifications-content {
-    max-width: min(30rem, 90vw);
+    max-width: 480px;
     margin: 0 auto;
   }
 }

@@ -1,5 +1,20 @@
-/* ===== PANTALLA DE REGISTER - DISEÑO GLASSMORPHISM RESPONSIVE ===== */
+/* =====================================================
+   REGISTER - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Diseño glassmorphism con partículas animadas.
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop)
+   
+   ===================================================== */
 
+/* ===========================================
+   AUTH PAGE BASE
+   =========================================== */
 .auth-page {
   --background: transparent;
 }
@@ -10,6 +25,7 @@
   overflow: hidden;
   min-height: 100vh;
   min-height: 100dvh;
+  min-height: -webkit-fill-available;
   padding-top: var(--safe-area-top);
   padding-bottom: var(--safe-area-bottom);
   display: flex;
@@ -22,11 +38,14 @@
 }
 
 .status-spacer {
-  height: max(clamp(1.5rem, 4vw, 1.75rem), env(safe-area-inset-top, clamp(1.25rem, 3vw, 1.5rem)));
+  height: max(24px, var(--safe-area-top, 20px));
   width: 100%;
   pointer-events: none;
 }
 
+/* ===========================================
+   BACKGROUND PARTICLES
+   =========================================== */
 .background-particles {
   position: absolute;
   top: 0;
@@ -40,13 +59,13 @@
 .particle {
   position: absolute;
   border-radius: 50%;
-  filter: blur(clamp(1px, 0.3vw, 2px));
+  filter: blur(2px);
   animation: float 8s ease-in-out infinite;
 }
 
 .particle-1 {
-  width: clamp(1rem, 3vw, 1.25rem);
-  height: clamp(1rem, 3vw, 1.25rem);
+  width: 16px;
+  height: 16px;
   background: rgba(34, 197, 94, 0.6);
   top: 10%;
   left: 15%;
@@ -55,8 +74,8 @@
 }
 
 .particle-2 {
-  width: clamp(0.75rem, 2.5vw, 0.9375rem);
-  height: clamp(0.75rem, 2.5vw, 0.9375rem);
+  width: 12px;
+  height: 12px;
   background: rgba(22, 163, 74, 0.6);
   top: 20%;
   right: 20%;
@@ -65,8 +84,8 @@
 }
 
 .particle-3 {
-  width: clamp(1.25rem, 4vw, 1.5625rem);
-  height: clamp(1.25rem, 4vw, 1.5625rem);
+  width: 20px;
+  height: 20px;
   background: rgba(16, 185, 129, 0.4);
   top: 60%;
   left: 10%;
@@ -75,8 +94,8 @@
 }
 
 .particle-4 {
-  width: clamp(0.9rem, 3vw, 1.125rem);
-  height: clamp(0.9rem, 3vw, 1.125rem);
+  width: 14px;
+  height: 14px;
   background: rgba(5, 150, 105, 0.5);
   top: 70%;
   right: 15%;
@@ -85,8 +104,8 @@
 }
 
 .particle-5 {
-  width: clamp(0.6rem, 2vw, 0.75rem);
-  height: clamp(0.6rem, 2vw, 0.75rem);
+  width: 10px;
+  height: 10px;
   background: rgba(6, 182, 212, 0.7);
   top: 30%;
   left: 80%;
@@ -95,8 +114,8 @@
 }
 
 .particle-6 {
-  width: clamp(1.1rem, 3.5vw, 1.375rem);
-  height: clamp(1.1rem, 3.5vw, 1.375rem);
+  width: 18px;
+  height: 18px;
   background: rgba(4, 120, 87, 0.4);
   top: 80%;
   left: 70%;
@@ -110,36 +129,40 @@
     opacity: 0.6;
   }
   25% {
-    transform: translateY(clamp(-1rem, -3vw, -1.25rem)) translateX(clamp(0.5rem, 1.5vw, 0.625rem)) rotate(90deg);
+    transform: translateY(-16px) translateX(8px) rotate(90deg);
     opacity: 0.8;
   }
   50% {
-    transform: translateY(clamp(-0.5rem, -1.5vw, -0.625rem)) translateX(clamp(-0.25rem, -0.8vw, -0.3125rem)) rotate(180deg);
+    transform: translateY(-8px) translateX(-4px) rotate(180deg);
     opacity: 1;
   }
   75% {
-    transform: translateY(clamp(-1.5rem, -4vw, -1.875rem)) translateX(clamp(0.75rem, 2vw, 0.9375rem)) rotate(270deg);
+    transform: translateY(-24px) translateX(12px) rotate(270deg);
     opacity: 0.7;
   }
 }
 
+/* ===========================================
+   AUTH CARD
+   =========================================== */
 .auth-card {
   position: relative;
   z-index: 10;
   background: rgba(30, 30, 30, 0.8);
-  backdrop-filter: blur(clamp(15px, 4vw, 20px));
+  backdrop-filter: blur(var(--blur-lg));
   border-radius: var(--radius-lg);
   padding: var(--padding-lg) var(--padding);
   margin: var(--padding-lg) auto var(--margin) auto;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 clamp(1rem, 3vw, 1.25rem) clamp(2rem, 5vw, 2.5rem) rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  max-width: min(400px, 90vw);
+  box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: 400px;
   width: 100%;
   box-sizing: border-box;
 }
 
+/* ===========================================
+   AUTH HEADER
+   =========================================== */
 .auth-header {
   text-align: center;
   margin-bottom: var(--padding);
@@ -161,6 +184,9 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* ===========================================
+   AUTH FORM
+   =========================================== */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -188,7 +214,7 @@
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0 var(--padding);
-  min-height: clamp(2.5rem, 7vw, 3rem);
+  min-height: 48px;
 }
 
 .input-icon {
@@ -225,6 +251,9 @@
   min-width: 0;
 }
 
+/* ===========================================
+   PASSWORD STRENGTH
+   =========================================== */
 .password-strength {
   display: flex;
   align-items: center;
@@ -234,15 +263,15 @@
 
 .strength-bar {
   flex: 1;
-  height: clamp(0.2rem, 0.6vw, 0.25rem);
+  height: 4px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-xs);
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .strength-fill {
   height: 100%;
-  border-radius: var(--radius-xs);
+  border-radius: 2px;
   transition: all 0.3s ease;
 }
 
@@ -250,12 +279,15 @@
   font-size: var(--font-xs);
   font-weight: 500;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  min-width: clamp(3rem, 8vw, 3.125rem);
+  min-width: 48px;
 }
 
+/* ===========================================
+   AUTH BUTTONS
+   =========================================== */
 .auth-button {
   margin-top: var(--spacing-sm);
-  min-height: clamp(2.5rem, 7vw, 3rem);
+  min-height: 48px;
   height: auto;
   border-radius: var(--radius);
   font-weight: bold;
@@ -268,17 +300,19 @@
   --background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
   --color: white !important;
   --border-radius: var(--radius) !important;
-  --box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 3vw, 1.25rem) rgba(34, 197, 94, 0.3) !important;
+  --box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3) !important;
   transition: all 0.3s ease;
   background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
 }
 
 .primary-button:hover {
-  --box-shadow: 0 clamp(0.75rem, 2vw, 0.9375rem) clamp(1.25rem, 4vw, 1.5625rem) rgba(34, 197, 94, 0.4) !important;
-  transform: translateY(clamp(-0.1rem, -0.3vw, -0.125rem));
-  background: linear-gradient(135deg, #166534 0%, #15803d 25%, #16a34a 50%, #22c55e 75%, #4ade80 100%) !important;
+  --box-shadow: 0 12px 24px rgba(34, 197, 94, 0.4) !important;
+  transform: translateY(-2px);
 }
 
+/* ===========================================
+   AUTH LINK
+   =========================================== */
 .auth-link {
   text-align: center;
   margin-top: var(--margin-md);
@@ -311,30 +345,33 @@
   margin-top: var(--spacing-sm);
 }
 
-@media (max-width: 480px) {
-  .auth-content {
-    padding-left: var(--padding-sm);
-    padding-right: var(--padding-sm);
-  }
-  
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
   .auth-card {
-    margin: var(--margin) auto;
-    padding: var(--padding) var(--padding-md);
-  }
-  
-  .particle {
-    display: none;
+    padding: var(--padding-xl) var(--padding-md);
   }
 }
 
-@media (max-width: 360px) {
-  .auth-content {
-    padding-left: var(--padding-xs);
-    padding-right: var(--padding-xs);
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
+  .input-container {
+    min-height: 52px;
   }
-  
-  .auth-card {
-    margin: var(--margin) auto;
-    padding: var(--padding-md) var(--padding);
+
+  .auth-button {
+    min-height: 52px;
+  }
+}
+
+/* ===========================================
+   REDUCE MOTION - Accessibility
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    animation: none;
   }
 }

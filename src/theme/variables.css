@@ -1,61 +1,126 @@
-/* For information on how to create your own theme, please see:
-http://ionicframework.com/docs/theming/ */
+/* =====================================================
+   SISTEMA RESPONSIVE - MOBILE FIRST
+   =====================================================
+   
+   ARQUITECTURA:
+   - Base: Mobile (< 480px) - valores por defecto
+   - sm: 480px - Móviles grandes
+   - md: 768px - Tablets
+   - lg: 1024px - Desktop
+   
+   PRINCIPIOS:
+   - Spacing estructural usa rem/px fijos, NO vw
+   - Typography puede usar clamp() con límites razonables
+   - Border-radius es fijo, NO escala con viewport
+   - Media queries ajustan valores en breakpoints específicos
+   
+   ===================================================== */
 
-/* ===== VARIABLES RESPONSIVE GLOBALES ===== */
 :root {
-  /* Tamaños de fuente responsive */
-  --font-xs: clamp(0.75rem, 2vw, 0.875rem);
-  --font-small: clamp(0.875rem, 2.5vw, 1rem);
-  --font-normal: clamp(1rem, 3vw, 1.125rem);
-  --font-medium: clamp(1.125rem, 3.5vw, 1.25rem);
-  --font-big: clamp(1.25rem, 4vw, 1.5rem);
-  --font-large: clamp(1.5rem, 5vw, 2rem);
-  --font-xl: clamp(2rem, 6vw, 2.5rem);
+  /* ===========================================
+     TIPOGRAFÍA - Usa clamp() de forma controlada
+     El valor medio NO depende excesivamente de vw
+     =========================================== */
+  --font-xs: 0.75rem;      /* 12px */
+  --font-small: 0.875rem;  /* 14px */
+  --font-normal: 1rem;     /* 16px */
+  --font-medium: 1.125rem; /* 18px */
+  --font-big: 1.25rem;     /* 20px */
+  --font-large: 1.5rem;    /* 24px */
+  --font-xl: 2rem;         /* 32px - Solo headers grandes usan clamp más adelante */
+  --font-2xl: 2.5rem;      /* 40px */
 
-  /* Espaciado responsive */
-  --spacing-xs: clamp(0.25rem, 1vw, 0.5rem);
-  --spacing-sm: clamp(0.5rem, 1.5vw, 0.75rem);
-  --spacing: clamp(0.75rem, 2vw, 1rem);
-  --spacing-md: clamp(1rem, 2.5vw, 1.5rem);
-  --spacing-lg: clamp(1.5rem, 3vw, 2rem);
-  --spacing-xl: clamp(2rem, 4vw, 3rem);
+  /* ===========================================
+     SPACING - Valores fijos para estabilidad
+     Se ajustan via media queries, NO con vw
+     =========================================== */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing: 0.75rem;      /* 12px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
 
-  /* Padding responsive */
-  --padding-xs: clamp(0.5rem, 1.5vw, 0.75rem);
-  --padding-sm: clamp(0.75rem, 2vw, 1rem);
-  --padding: clamp(1rem, 2.5vw, 1.5rem);
-  --padding-md: clamp(1.5rem, 3vw, 2rem);
-  --padding-lg: clamp(2rem, 4vw, 3rem);
+  /* ===========================================
+     PADDING - Valores fijos para consistencia
+     =========================================== */
+  --padding-xs: 0.5rem;    /* 8px */
+  --padding-sm: 0.75rem;   /* 12px */
+  --padding: 1rem;         /* 16px */
+  --padding-md: 1.25rem;   /* 20px */
+  --padding-lg: 1.5rem;    /* 24px */
+  --padding-xl: 2rem;      /* 32px */
 
-  /* Margin responsive */
-  --margin-xs: clamp(0.25rem, 1vw, 0.5rem);
-  --margin-sm: clamp(0.5rem, 1.5vw, 0.75rem);
-  --margin: clamp(0.75rem, 2vw, 1rem);
-  --margin-md: clamp(1rem, 2.5vw, 1.5rem);
-  --margin-lg: clamp(1.5rem, 3vw, 2rem);
+  /* ===========================================
+     MARGIN - Valores fijos
+     =========================================== */
+  --margin-xs: 0.25rem;    /* 4px */
+  --margin-sm: 0.5rem;     /* 8px */
+  --margin: 0.75rem;       /* 12px */
+  --margin-md: 1rem;       /* 16px */
+  --margin-lg: 1.5rem;     /* 24px */
+  --margin-xl: 2rem;       /* 32px */
 
-  /* Border radius responsive */
-  --radius-sm: clamp(0.5rem, 1.5vw, 0.75rem);
-  --radius: clamp(0.75rem, 2vw, 1rem);
-  --radius-md: clamp(1rem, 2.5vw, 1.5rem);
-  --radius-lg: clamp(1.5rem, 3vw, 2rem);
-  --radius-xl: clamp(2rem, 4vw, 2.5rem);
+  /* ===========================================
+     BORDER RADIUS - Fijo, NUNCA escala con vw
+     =========================================== */
+  --radius-sm: 0.5rem;     /* 8px */
+  --radius: 0.75rem;       /* 12px */
+  --radius-md: 1rem;       /* 16px */
+  --radius-lg: 1.25rem;    /* 20px */
+  --radius-xl: 1.5rem;     /* 24px */
+  --radius-full: 9999px;   /* Círculo/pill */
 
-  /* Safe areas */
+  /* ===========================================
+     SAFE AREAS - Para notch y bordes de dispositivos
+     =========================================== */
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-left: env(safe-area-inset-left, 0px);
   --safe-area-right: env(safe-area-inset-right, 0px);
 
-  /* Icon sizes responsive */
-  --icon-xs: clamp(1rem, 3vw, 1.25rem);
-  --icon-sm: clamp(1.25rem, 3.5vw, 1.5rem);
-  --icon: clamp(1.5rem, 4vw, 1.75rem);
-  --icon-md: clamp(1.75rem, 4.5vw, 2rem);
-  --icon-lg: clamp(2rem, 5vw, 2.5rem);
-  --icon-xl: clamp(2.5rem, 6vw, 3rem);
+  /* ===========================================
+     ICON SIZES - Fijos para consistencia
+     =========================================== */
+  --icon-xs: 1rem;         /* 16px */
+  --icon-sm: 1.25rem;      /* 20px */
+  --icon: 1.5rem;          /* 24px */
+  --icon-md: 1.75rem;      /* 28px */
+  --icon-lg: 2rem;         /* 32px */
+  --icon-xl: 2.5rem;       /* 40px */
 
-  /* App Colors */
+  /* ===========================================
+     TAB BAR HEIGHT - Fijo para el bottom navigation
+     =========================================== */
+  --tab-bar-height: 70px;
+  --tab-bar-height-with-safe: calc(70px + var(--safe-area-bottom));
+
+  /* ===========================================
+     CONTAINER WIDTH - Para centrar contenido
+     =========================================== */
+  --container-max-width: 480px;
+  --container-padding: var(--padding);
+
+  /* ===========================================
+     SHADOWS - Fijos, sin vw
+     =========================================== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.25);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.3);
+
+  /* ===========================================
+     BLUR - Fijo
+     =========================================== */
+  --blur-sm: 4px;
+  --blur: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+
+  /* ===========================================
+     APP COLORS
+     =========================================== */
   --ion-color-primary: #ffeb3b;
   --ion-color-primary-rgb: 255, 235, 59;
   --ion-color-primary-contrast: #000000;
@@ -134,7 +199,59 @@ http://ionicframework.com/docs/theming/ */
   --ion-card-background: #ffffff;
 }
 
-/* Dark Mode Overrides */
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
+  :root {
+    --font-large: 1.625rem;  /* 26px */
+    --font-xl: 2.25rem;      /* 36px */
+    
+    --spacing-lg: 1.75rem;   /* 28px */
+    --spacing-xl: 2.5rem;    /* 40px */
+    
+    --padding-md: 1.5rem;    /* 24px */
+    --padding-lg: 2rem;      /* 32px */
+    
+    --container-max-width: 540px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
+  :root {
+    --font-big: 1.375rem;    /* 22px */
+    --font-large: 1.75rem;   /* 28px */
+    --font-xl: 2.5rem;       /* 40px */
+    
+    --spacing-lg: 2rem;      /* 32px */
+    --spacing-xl: 3rem;      /* 48px */
+    
+    --padding-md: 1.75rem;   /* 28px */
+    --padding-lg: 2.5rem;    /* 40px */
+    
+    --tab-bar-height: 80px;
+    --container-max-width: 720px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: lg (1024px) - Desktop
+   =========================================== */
+@media (min-width: 1024px) {
+  :root {
+    --font-large: 2rem;      /* 32px */
+    --font-xl: 3rem;         /* 48px */
+    
+    --container-max-width: 960px;
+  }
+}
+
+/* ===========================================
+   DARK MODE
+   =========================================== */
 @media (prefers-color-scheme: dark) {
   :root {
     --ion-background-color: #000000;
@@ -144,7 +261,11 @@ http://ionicframework.com/docs/theming/ */
   }
 }
 
-/* Global Background Styles */
+/* ===========================================
+   GLOBAL STYLES
+   =========================================== */
+
+/* Background global de la app */
 ion-app {
   background: 
     linear-gradient(
@@ -158,8 +279,10 @@ ion-app {
   background-position: center !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
+  /* Evitar 100vh puro - usar min-height con fallback */
   min-height: 100vh;
   min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 ion-content {
@@ -170,19 +293,30 @@ ion-page {
   background: transparent;
 }
 
-/* Responsive base font size */
+/* Base font size - NO usar clamp con vw aquí */
 html {
-  font-size: clamp(14px, 4vw, 16px);
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-/* Ensure images are responsive by default */
+/* Evitar overflow horizontal accidental */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Imágenes responsive por defecto */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Helper classes for common flexbox patterns */
+/* ===========================================
+   UTILITY CLASSES - Flexbox
+   =========================================== */
 .flex-column {
   display: flex;
   flex-direction: column;
@@ -208,27 +342,92 @@ img {
   flex-wrap: wrap;
 }
 
+/* ===========================================
+   UTILITY CLASSES - Gap
+   =========================================== */
 .gap-xs { gap: var(--spacing-xs); }
 .gap-sm { gap: var(--spacing-sm); }
 .gap { gap: var(--spacing); }
 .gap-md { gap: var(--spacing-md); }
 .gap-lg { gap: var(--spacing-lg); }
 
+/* ===========================================
+   UTILITY CLASSES - Margin Bottom
+   =========================================== */
 .mb-xs { margin-bottom: var(--spacing-xs); }
 .mb-sm { margin-bottom: var(--spacing-sm); }
 .mb { margin-bottom: var(--spacing); }
 .mb-md { margin-bottom: var(--spacing-md); }
 .mb-lg { margin-bottom: var(--spacing-lg); }
 
+/* ===========================================
+   UTILITY CLASSES - Margin Top
+   =========================================== */
 .mt-xs { margin-top: var(--spacing-xs); }
 .mt-sm { margin-top: var(--spacing-sm); }
 .mt { margin-top: var(--spacing); }
 .mt-md { margin-top: var(--spacing-md); }
 .mt-lg { margin-top: var(--spacing-lg); }
-.mt-auto { margin-left: auto; }
+.mt-auto { margin-top: auto; }
+.ml-auto { margin-left: auto; }
 
+/* ===========================================
+   UTILITY CLASSES - Padding
+   =========================================== */
 .p-xs { padding: var(--padding-xs); }
 .p-sm { padding: var(--padding-sm); }
 .p { padding: var(--padding); }
 .p-md { padding: var(--padding-md); }
 .p-lg { padding: var(--padding-lg); }
+
+/* ===========================================
+   CONTAINER - Para centrar contenido con max-width
+   =========================================== */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  box-sizing: border-box;
+}
+
+/* ===========================================
+   FULL HEIGHT UTILITIES
+   Evitar 100vh puro que causa problemas en móviles
+   =========================================== */
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+.h-screen {
+  height: 100vh;
+  height: 100dvh;
+  height: -webkit-fill-available;
+}
+
+/* ===========================================
+   SAFE AREA UTILITIES
+   =========================================== */
+.safe-top {
+  padding-top: var(--safe-area-top);
+}
+
+.safe-bottom {
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.safe-x {
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
+
+/* ===========================================
+   PREVENT HORIZONTAL SCROLL
+   =========================================== */
+.no-overflow-x {
+  overflow-x: hidden;
+}

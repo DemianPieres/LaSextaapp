@@ -1,5 +1,18 @@
-/* ===== PÁGINA CON FONDO COMPARTIDO RESPONSIVE ===== */
+/* =====================================================
+   PERFIL.CSS - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop)
+   
+   ===================================================== */
 
+/* ===========================================
+   PAGE BASE
+   =========================================== */
 .page-with-shared-background {
   --background: transparent;
 }
@@ -7,7 +20,7 @@
 .custom-header {
   --background: rgba(0, 0, 0, 0.8);
   --color: white;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: var(--safe-area-top);
 }
@@ -15,30 +28,37 @@
 .header-toolbar {
   --background: rgba(0, 0, 0, 0.8);
   --color: white;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
 }
 
 .page-content {
   --background: transparent;
   position: relative;
-  overflow: hidden;
-  padding-bottom: calc(var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: calc(var(--safe-area-bottom) + var(--tab-bar-height) + 16px);
 }
 
+/* ===========================================
+   PERFIL CONTAINER
+   =========================================== */
 .perfil-container {
   position: relative;
   z-index: 2;
-  padding: var(--padding-lg) var(--padding) clamp(5rem, 18vw, 8.75rem);
+  padding: var(--padding-lg) var(--padding) calc(var(--tab-bar-height) + 80px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--margin);
-  max-width: min(30rem, 95vw);
+  max-width: 480px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
+/* ===========================================
+   AVATAR SECTION
+   =========================================== */
 .perfil-avatar-section {
   display: flex;
   flex-direction: column;
@@ -50,8 +70,8 @@
 
 .perfil-avatar-wrapper {
   position: relative;
-  width: clamp(6rem, 20vw, 8.125rem);
-  height: clamp(6rem, 20vw, 8.125rem);
+  width: 96px;
+  height: 96px;
 }
 
 .perfil-avatar {
@@ -64,7 +84,7 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 clamp(0.4rem, 1.2vw, 0.5rem) clamp(1rem, 3vw, 1.5rem) rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 .perfil-avatar img {
@@ -74,7 +94,7 @@
 }
 
 .perfil-avatar-initial {
-  font-size: clamp(2rem, 8vw, 3.25rem);
+  font-size: 40px;
   font-weight: 600;
   color: white;
   user-select: none;
@@ -86,12 +106,12 @@
 
 .perfil-avatar-camera-btn {
   position: absolute;
-  bottom: clamp(0.2rem, 0.6vw, 0.25rem);
-  right: clamp(0.2rem, 0.6vw, 0.25rem);
-  width: clamp(1.8rem, 6vw, 2.375rem);
-  height: clamp(1.8rem, 6vw, 2.375rem);
-  min-width: clamp(1.8rem, 6vw, 2.375rem);
-  min-height: clamp(1.8rem, 6vw, 2.375rem);
+  bottom: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
   border: none;
@@ -99,7 +119,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 clamp(0.1rem, 0.3vw, 0.125rem) clamp(0.4rem, 1.2vw, 0.5rem) rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow);
   transition: transform 0.2s ease;
 }
 
@@ -120,13 +140,16 @@
   text-align: center;
 }
 
+/* ===========================================
+   POINTS CARD
+   =========================================== */
 .perfil-points-card {
   width: 100%;
   background: rgba(45, 45, 50, 0.95);
   border-radius: var(--radius);
   padding: var(--padding-md);
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
-  box-shadow: 0 clamp(0.2rem, 0.6vw, 0.25rem) clamp(0.8rem, 2.4vw, 1rem) rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow-md);
 }
 
 .perfil-points-header {
@@ -154,7 +177,7 @@
 }
 
 .perfil-points-number {
-  font-size: clamp(2.5rem, 8vw, 3rem);
+  font-size: 40px;
   font-weight: 700;
   color: white;
   line-height: 1;
@@ -171,6 +194,9 @@
   transform: scale(1.5);
 }
 
+/* ===========================================
+   ACTION BUTTONS
+   =========================================== */
 .perfil-action-btn,
 .perfil-logout-btn {
   width: 100%;
@@ -183,7 +209,7 @@
   color: #1a1a1a;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 clamp(0.2rem, 0.6vw, 0.25rem) clamp(0.6rem, 1.8vw, 0.75rem) rgba(255, 193, 7, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
 .perfil-logout-btn {
@@ -195,11 +221,14 @@
   transform: scale(0.98);
 }
 
+/* ===========================================
+   MENU
+   =========================================== */
 .perfil-menu {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.1rem, 0.3vw, 0.125rem);
+  gap: 2px;
   margin-top: var(--margin-sm);
 }
 
@@ -244,6 +273,9 @@
   flex-shrink: 0;
 }
 
+/* ===========================================
+   FOOTER
+   =========================================== */
 .perfil-footer {
   margin-top: var(--padding);
   display: flex;
@@ -294,7 +326,7 @@
   font-size: var(--font-xs);
   font-weight: 700;
   color: rgba(255, 255, 255, 0.6);
-  letter-spacing: clamp(0.025rem, 0.075vw, 0.03125rem);
+  letter-spacing: 0.5px;
 }
 
 .perfil-footer-fb {
@@ -302,6 +334,9 @@
   color: #4267B2;
 }
 
+/* ===========================================
+   CHANGE PASSWORD MODAL
+   =========================================== */
 .change-password-modal-content {
   --background: rgba(0, 0, 0, 0.85);
   display: flex;
@@ -313,15 +348,15 @@
 
 .change-password-container {
   width: 100%;
-  max-width: min(26.25rem, 90vw);
+  max-width: 420px;
   margin: 0 auto;
   background: rgba(20, 20, 24, 0.98);
   border-radius: var(--radius-lg);
   padding: var(--padding-md) var(--padding);
   box-shadow:
-    0 clamp(0.9rem, 2.8vw, 1.125rem) clamp(2rem, 6vw, 2.5rem) rgba(0, 0, 0, 0.65),
+    var(--shadow-xl),
     0 0 0 1px rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(clamp(15px, 4vw, 18px));
+  backdrop-filter: blur(var(--blur-lg));
   display: flex;
   flex-direction: column;
   gap: var(--margin-sm);
@@ -345,7 +380,7 @@
 .change-password-close-btn {
   border: none;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   width: var(--icon-md);
   height: var(--icon-md);
   min-width: var(--icon-md);
@@ -400,7 +435,7 @@
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 0 var(--spacing);
-  min-height: clamp(2.5rem, 7vw, 2.875rem);
+  min-height: 44px;
 }
 
 .change-password-input {
@@ -438,13 +473,13 @@
 
 .change-password-buttons ion-button {
   flex: 1;
-  min-width: clamp(6rem, 20vw, 7.5rem);
+  min-width: 96px;
 }
 
 .change-password-btn,
 .change-password-btn-secondary {
-  --border-radius: 999px;
-  min-height: clamp(2.5rem, 7vw, 2.75rem);
+  --border-radius: var(--radius-full);
+  min-height: 44px;
   height: auto;
   font-size: var(--font-normal);
   font-weight: 600;
@@ -454,11 +489,11 @@
 .change-password-btn {
   --background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #4ade80 100%);
   --color: #ffffff;
-  --box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.1rem, 3.3vw, 1.375rem) rgba(34, 197, 94, 0.35);
+  --box-shadow: 0 10px 22px rgba(34, 197, 94, 0.35);
 }
 
 .change-password-btn::part(native) {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .change-password-btn-secondary {
@@ -468,11 +503,53 @@
 }
 
 .change-password-btn-secondary::part(native) {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
-@media (max-width: 480px) {
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
+  .perfil-avatar-wrapper {
+    width: 112px;
+    height: 112px;
+  }
+
+  .perfil-avatar-initial {
+    font-size: 48px;
+  }
+
+  .perfil-avatar-camera-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .perfil-points-number {
+    font-size: 48px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
   .perfil-container {
-    padding: var(--padding) var(--spacing) clamp(4rem, 15vw, 7.5rem);
+    max-width: 540px;
+    padding: var(--padding-xl) var(--padding-md) calc(var(--tab-bar-height) + 100px);
+  }
+
+  .perfil-avatar-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+
+  .perfil-avatar-initial {
+    font-size: 52px;
+  }
+
+  .perfil-points-card {
+    padding: var(--padding-lg);
   }
 }

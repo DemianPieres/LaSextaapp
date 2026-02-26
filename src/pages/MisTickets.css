@@ -1,5 +1,18 @@
-/* ===== PÁGINA CON FONDO COMPARTIDO RESPONSIVE ===== */
+/* =====================================================
+   MIS TICKETS - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop)
+   
+   ===================================================== */
 
+/* ===========================================
+   PAGE BASE
+   =========================================== */
 .page-with-shared-background {
   --background: transparent;
 }
@@ -7,7 +20,7 @@
 .custom-header {
   --background: rgba(0, 0, 0, 0.8);
   --color: white;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: var(--safe-area-top);
 }
@@ -15,30 +28,38 @@
 .header-toolbar {
   --background: rgba(0, 0, 0, 0.8);
   --color: white;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
 }
 
 .page-content {
   --background: transparent;
   position: relative;
-  overflow: hidden;
-  padding-bottom: calc(var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: calc(var(--safe-area-bottom) + var(--tab-bar-height) + 16px);
 }
 
+/* ===========================================
+   TICKETS WRAPPER
+   =========================================== */
 .tickets-wrapper {
   position: relative;
   z-index: 2;
-  padding: var(--padding-md) var(--padding) clamp(5rem, 18vw, 7.5rem);
+  padding: var(--padding-md) var(--padding) calc(var(--tab-bar-height) + 80px);
   color: #f5f5f5;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--padding-md);
   width: 100%;
-  max-width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
   box-sizing: border-box;
 }
 
+/* ===========================================
+   TICKETS HEADER
+   =========================================== */
 .tickets-header {
   display: flex;
   align-items: center;
@@ -50,10 +71,10 @@
 }
 
 .tickets-icon {
-  width: clamp(3rem, 10vw, 3.5rem);
-  height: clamp(3rem, 10vw, 3.5rem);
-  min-width: clamp(3rem, 10vw, 3.5rem);
-  min-height: clamp(3rem, 10vw, 3.5rem);
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.06);
   display: flex;
@@ -61,7 +82,7 @@
   justify-content: center;
   font-size: var(--icon-md);
   color: #ffeb3b;
-  backdrop-filter: blur(clamp(6px, 1.5vw, 8px));
+  backdrop-filter: blur(var(--blur-sm));
   flex-shrink: 0;
 }
 
@@ -83,6 +104,9 @@
   color: rgba(255, 255, 255, 0.78);
 }
 
+/* ===========================================
+   TICKET SECTIONS
+   =========================================== */
 .ticket-section {
   display: flex;
   flex-direction: column;
@@ -98,18 +122,21 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   margin: 0 0 var(--spacing) 0;
-  letter-spacing: clamp(0.02rem, 0.06vw, 0.025rem);
+  letter-spacing: 0.5px;
   width: 100%;
   text-align: left;
   box-sizing: border-box;
 }
 
+/* ===========================================
+   TICKET CARD
+   =========================================== */
 .ticket-card {
   --background: rgba(22, 22, 24, 0.88);
   --color: #f5f5f5;
-  backdrop-filter: blur(clamp(10px, 2.5vw, 12px));
+  backdrop-filter: blur(var(--blur-md));
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 clamp(0.8rem, 2.5vw, 1rem) clamp(2rem, 6vw, 2.5rem) rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-lg);
   border-radius: var(--radius-lg);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
@@ -126,18 +153,18 @@
 
 .ticket-card--active {
   border-color: rgba(123, 255, 160, 0.22);
-  box-shadow: 0 clamp(0.9rem, 2.8vw, 1.125rem) clamp(2rem, 6vw, 2.5rem) rgba(67, 255, 154, 0.18);
+  box-shadow: 0 16px 40px rgba(67, 255, 154, 0.18);
 }
 
 .ticket-card--used {
   border-color: rgba(255, 92, 92, 0.15);
-  box-shadow: 0 clamp(0.6rem, 1.8vw, 0.75rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(255, 72, 72, 0.12);
+  box-shadow: 0 12px 30px rgba(255, 72, 72, 0.12);
   opacity: 0.9;
 }
 
 .ticket-card:hover.ticket-card--active {
-  transform: translateY(clamp(-0.2rem, -0.6vw, -0.25rem));
-  box-shadow: 0 clamp(1.1rem, 3.5vw, 1.375rem) clamp(2.5rem, 7.5vw, 3.4375rem) rgba(67, 255, 154, 0.22);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(67, 255, 154, 0.22);
 }
 
 .ticket-card ion-card-header {
@@ -151,11 +178,14 @@
 
 .ticket-card ion-card-subtitle {
   font-size: var(--font-xs);
-  letter-spacing: clamp(0.08rem, 0.24vw, 0.1rem);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* ===========================================
+   TICKET STATUS
+   =========================================== */
 .ticket-status {
   display: flex;
   align-items: center;
@@ -167,7 +197,7 @@
 
 .ticket-id {
   font-size: var(--font-xs);
-  letter-spacing: clamp(0.06rem, 0.18vw, 0.075rem);
+  letter-spacing: 1px;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
 }
@@ -183,6 +213,9 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* ===========================================
+   TICKET DATES
+   =========================================== */
 .ticket-dates {
   display: grid;
   gap: var(--spacing-sm);
@@ -204,20 +237,23 @@
   flex-shrink: 0;
 }
 
+/* ===========================================
+   QR PLACEHOLDER
+   =========================================== */
 .qr-placeholder {
   width: 100%;
   aspect-ratio: 1;
   max-width: 100%;
   border-radius: var(--radius);
   background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) clamp(0.6rem, 1.8vw, 0.75rem), rgba(0, 0, 0, 0.12) clamp(0.6rem, 1.8vw, 0.75rem), rgba(0, 0, 0, 0.12) clamp(1.2rem, 3.6vw, 1.5rem)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 12px, rgba(0, 0, 0, 0.12) 12px, rgba(0, 0, 0, 0.12) 24px),
     linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
   border: 1px dashed rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.9);
-  font-size: clamp(3rem, 12vw, 4rem);
+  font-size: 48px;
   margin-bottom: var(--spacing);
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
@@ -228,20 +264,23 @@
 }
 
 .qr-placeholder--modal {
-  max-width: min(20rem, 80vw);
+  max-width: 320px;
   width: 100%;
   margin: 0 auto var(--margin-md);
-  border-width: clamp(0.1rem, 0.3vw, 0.125rem);
-  font-size: clamp(4rem, 15vw, 5rem);
+  border-width: 2px;
+  font-size: 64px;
 }
 
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
 .empty-state {
   background: rgba(22, 22, 24, 0.75);
   border-radius: var(--radius-lg);
   border: 1px dashed rgba(255, 255, 255, 0.16);
   padding: var(--padding-lg) var(--padding-md);
   text-align: center;
-  backdrop-filter: blur(clamp(10px, 2.5vw, 12px));
+  backdrop-filter: blur(var(--blur-md));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -251,10 +290,10 @@
 }
 
 .empty-state__icon {
-  width: clamp(3rem, 10vw, 3.75rem);
-  height: clamp(3rem, 10vw, 3.75rem);
-  min-width: clamp(3rem, 10vw, 3.75rem);
-  min-height: clamp(3rem, 10vw, 3.75rem);
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   display: flex;
@@ -277,6 +316,9 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
+/* ===========================================
+   HISTORY SECTION
+   =========================================== */
 .history-section {
   display: flex;
   flex-direction: column;
@@ -293,10 +335,13 @@
   align-self: flex-start;
 }
 
+/* ===========================================
+   TICKET MODAL
+   =========================================== */
 .ticket-modal {
   --background: rgba(10, 10, 12, 0.96);
   --border-radius: var(--radius-lg);
-  backdrop-filter: blur(clamp(15px, 4vw, 18px));
+  backdrop-filter: blur(var(--blur-lg));
 }
 
 .modal-header {
@@ -324,13 +369,16 @@
 }
 
 .modal-body {
-  width: min(clamp(20rem, 80vw, 30rem), 90vw);
+  width: 100%;
+  max-width: 480px;
   margin: var(--padding-lg) auto;
+  padding: 0 var(--padding);
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: var(--margin);
   color: rgba(255, 255, 255, 0.88);
+  box-sizing: border-box;
 }
 
 .modal-details {
@@ -344,9 +392,32 @@
   text-align: left;
 }
 
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
+  .tickets-icon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    font-size: var(--icon-lg);
+  }
+
+  .empty-state__icon {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
 @media (min-width: 768px) {
   .tickets-wrapper {
-    padding: var(--padding-lg) var(--padding-lg) clamp(6rem, 20vw, 8.75rem);
+    padding: var(--padding-lg) var(--padding-lg) calc(var(--tab-bar-height) + 120px);
   }
 
   .tickets-header {
@@ -354,10 +425,10 @@
   }
 
   .tickets-icon {
-    width: clamp(3.5rem, 12vw, 4rem);
-    height: clamp(3.5rem, 12vw, 4rem);
-    min-width: clamp(3.5rem, 12vw, 4rem);
-    min-height: clamp(3.5rem, 12vw, 4rem);
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
     font-size: var(--icon-lg);
   }
 

@@ -1,5 +1,18 @@
-/* ===== PÁGINA CON FONDO COMPARTIDO RESPONSIVE ===== */
+/* =====================================================
+   PUNTOS.CSS - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop)
+   
+   ===================================================== */
 
+/* ===========================================
+   PAGE BASE
+   =========================================== */
 .page-with-shared-background {
   --background: transparent;
 }
@@ -7,32 +20,41 @@
 .page-content {
   --background: transparent;
   position: relative;
-  overflow: hidden;
-  padding-bottom: calc(var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: calc(var(--safe-area-bottom) + var(--tab-bar-height) + 16px);
 }
 
+/* ===========================================
+   PUNTOS CONTAINER
+   =========================================== */
 .puntos-container {
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
 }
 
+/* ===========================================
+   PUNTOS HEADER
+   =========================================== */
 .puntos-header {
   position: relative;
   background: linear-gradient(180deg, rgba(30, 30, 35, 0.98) 0%, rgba(25, 25, 30, 0.95) 100%);
-  padding: clamp(3rem, 10vw, 3.75rem) var(--padding-md) var(--padding);
+  padding: 48px var(--padding-md) var(--padding);
   overflow: hidden;
-  padding-top: calc(clamp(3rem, 10vw, 3.75rem) + var(--safe-area-top));
+  padding-top: calc(48px + var(--safe-area-top));
 }
 
 .puntos-header-hexagons {
   position: absolute;
   top: 0;
   right: 0;
-  width: clamp(9rem, 30vw, 11.25rem);
-  height: clamp(10rem, 35vw, 12.5rem);
+  width: 144px;
+  height: 160px;
   overflow: hidden;
   opacity: 0.15;
 }
@@ -44,27 +66,27 @@
 }
 
 .hexagon-1 {
-  top: clamp(1rem, 3vw, 1.25rem);
-  right: clamp(1rem, 3vw, 1.25rem);
+  top: 16px;
+  right: 16px;
   transform: rotate(15deg);
-  width: clamp(3rem, 10vw, 3.75rem);
-  height: clamp(3.5rem, 12vw, 4.375rem);
+  width: 48px;
+  height: 56px;
 }
 
 .hexagon-2 {
-  top: clamp(3rem, 10vw, 3.75rem);
-  right: clamp(3.5rem, 12vw, 4.375rem);
+  top: 48px;
+  right: 56px;
   transform: rotate(-10deg);
-  width: clamp(4rem, 13vw, 5rem);
-  height: clamp(4.5rem, 15vw, 5.625rem);
+  width: 64px;
+  height: 72px;
 }
 
 .hexagon-3 {
-  top: clamp(5rem, 17vw, 6.25rem);
-  right: clamp(1.5rem, 5vw, 1.875rem);
+  top: 80px;
+  right: 24px;
   transform: rotate(25deg);
-  width: clamp(2.5rem, 8vw, 3.125rem);
-  height: clamp(3rem, 10vw, 3.75rem);
+  width: 40px;
+  height: 48px;
 }
 
 .puntos-header-content {
@@ -88,34 +110,40 @@
 }
 
 .puntos-coin-icon {
-  width: clamp(2.5rem, 8vw, 3rem);
-  height: clamp(2.5rem, 8vw, 3rem);
-  min-width: clamp(2.5rem, 8vw, 3rem);
-  min-height: clamp(2.5rem, 8vw, 3rem);
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   flex-shrink: 0;
 }
 
 .puntos-coin-icon svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 clamp(0.1rem, 0.3vw, 0.125rem) clamp(0.4rem, 1.2vw, 0.5rem) rgba(255, 193, 7, 0.4));
+  filter: drop-shadow(0 2px 8px rgba(255, 193, 7, 0.4));
 }
 
 .puntos-number {
-  font-size: clamp(3rem, 12vw, 4rem);
+  font-size: 48px;
   font-weight: 700;
   color: white;
   line-height: 1;
 }
 
+/* ===========================================
+   PUNTOS CONTENT
+   =========================================== */
 .puntos-content {
   flex: 1;
   padding: var(--padding-md);
-  padding-bottom: clamp(5rem, 18vw, 7.5rem);
+  padding-bottom: calc(var(--tab-bar-height) + 80px);
   width: 100%;
   box-sizing: border-box;
 }
 
+/* ===========================================
+   REDEEM BUTTON
+   =========================================== */
 .puntos-redeem-btn {
   width: 100%;
   background: rgba(60, 60, 65, 0.9);
@@ -161,6 +189,20 @@
   color: #1a1a1a;
 }
 
+.puntos-redeem-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(50, 50, 55, 0.9);
+}
+
+.puntos-redeem-btn.disabled:active {
+  transform: none;
+  background: rgba(50, 50, 55, 0.9);
+}
+
+/* ===========================================
+   MOVEMENTS SECTION
+   =========================================== */
 .puntos-movements-section {
   margin-top: var(--margin);
 }
@@ -173,28 +215,31 @@
   text-align: left;
 }
 
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
 .puntos-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(4rem, 15vw, 5rem) var(--padding);
+  padding: 64px var(--padding);
   gap: var(--margin);
   width: 100%;
 }
 
 .puntos-empty-icon {
   position: relative;
-  width: clamp(5rem, 18vw, 6.25rem);
-  height: clamp(5rem, 18vw, 6.25rem);
-  min-width: clamp(5rem, 18vw, 6.25rem);
-  min-height: clamp(5rem, 18vw, 6.25rem);
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
   background: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: clamp(0.15rem, 0.45vw, 0.1875rem) solid rgba(0, 0, 0, 0.2);
+  border: 3px solid rgba(0, 0, 0, 0.2);
 }
 
 .puntos-empty-icon ion-icon {
@@ -204,8 +249,8 @@
 
 .puntos-empty-icon-slash {
   position: absolute;
-  width: clamp(0.1rem, 0.3vw, 0.125rem);
-  height: clamp(6rem, 20vw, 7.5rem);
+  width: 2px;
+  height: 96px;
   background: #333;
   transform: rotate(45deg);
 }
@@ -215,10 +260,13 @@
   color: white;
   text-align: center;
   margin: 0;
-  max-width: min(17.5rem, 90vw);
+  max-width: 280px;
   line-height: 1.5;
 }
 
+/* ===========================================
+   MOVEMENTS LIST
+   =========================================== */
 .puntos-movements-list {
   display: flex;
   flex-direction: column;
@@ -233,7 +281,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
   width: 100%;
   box-sizing: border-box;
   flex-wrap: wrap;
@@ -275,17 +323,9 @@
   color: #F44336;
 }
 
-.puntos-redeem-btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: rgba(50, 50, 55, 0.9);
-}
-
-.puntos-redeem-btn.disabled:active {
-  transform: none;
-  background: rgba(50, 50, 55, 0.9);
-}
-
+/* ===========================================
+   LOADING STATE
+   =========================================== */
 .puntos-spinner {
   --color: white;
 }
@@ -295,11 +335,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 10vw, 3.75rem) var(--padding);
+  padding: 48px var(--padding);
   gap: var(--spacing);
   width: 100%;
 }
 
+/* ===========================================
+   REWARDS SECTION
+   =========================================== */
 .puntos-rewards-section {
   margin-bottom: var(--padding-md);
 }
@@ -311,10 +354,13 @@
   width: 100%;
 }
 
+/* ===========================================
+   REWARD CARD
+   =========================================== */
 .puntos-reward-card {
   width: 100%;
   border-radius: var(--radius);
-  padding: var(--spacing) var(--spacing);
+  padding: var(--spacing);
   background: rgba(40, 40, 45, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -332,8 +378,8 @@
 }
 
 .puntos-reward-card.selected {
-  transform: translateY(clamp(-0.1rem, -0.3vw, -0.125rem));
-  box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
   border-color: #22c55e;
   background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.32), rgba(24, 24, 27, 0.96));
 }
@@ -343,10 +389,10 @@
 }
 
 .puntos-reward-image {
-  width: clamp(3rem, 10vw, 3.75rem);
-  height: clamp(3rem, 10vw, 3.75rem);
-  min-width: clamp(3rem, 10vw, 3.75rem);
-  min-height: clamp(3rem, 10vw, 3.75rem);
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: var(--radius);
   overflow: hidden;
   background: #111827;
@@ -392,7 +438,7 @@
 
 .puntos-reward-points {
   padding: var(--spacing-xs) var(--margin-sm);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(251, 191, 36, 0.16);
   color: #fde68a;
   font-weight: 600;
@@ -402,9 +448,12 @@
   color: rgba(209, 213, 219, 0.9);
 }
 
+/* ===========================================
+   REDEEM MODAL
+   =========================================== */
 .puntos-redeem-modal {
   --width: 90%;
-  --max-width: min(31.25rem, 90vw);
+  --max-width: 500px;
   --height: auto;
   --border-radius: var(--radius-lg);
   padding-top: var(--safe-area-top);
@@ -418,7 +467,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  min-height: clamp(25rem, 80vw, 31.25rem);
+  min-height: 400px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -485,7 +534,7 @@
   color: #333;
   margin: 0;
   text-align: center;
-  letter-spacing: clamp(0.05rem, 0.15vw, 0.0625rem);
+  letter-spacing: 1px;
 }
 
 .puntos-modal-info {
@@ -503,19 +552,9 @@
   text-align: center;
 }
 
-@media (max-width: 480px) {
-  .puntos-header {
-    padding: clamp(2.5rem, 8vw, 3.125rem) var(--padding) var(--padding-md);
-  }
-
-  .puntos-content {
-    padding: var(--padding) var(--padding);
-    padding-bottom: clamp(4.5rem, 17vw, 6.875rem);
-  }
-}
-
-/* ===== COMING SOON - PROXIMAMENTE ===== */
-
+/* ===========================================
+   COMING SOON - PROXIMAMENTE
+   =========================================== */
 .puntos-coming-soon-container {
   display: flex;
   align-items: center;
@@ -524,7 +563,7 @@
   min-height: 100dvh;
   padding: var(--padding-md);
   padding-top: calc(var(--padding-md) + var(--safe-area-top));
-  padding-bottom: calc(var(--padding-md) + var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  padding-bottom: calc(var(--padding-md) + var(--safe-area-bottom) + var(--tab-bar-height) + 16px);
   box-sizing: border-box;
 }
 
@@ -535,53 +574,54 @@
   justify-content: center;
   text-align: center;
   gap: var(--spacing-md);
-  max-width: min(400px, 90vw);
+  max-width: 400px;
+  width: 100%;
   padding: var(--padding-lg);
   background: rgba(30, 30, 35, 0.85);
-  backdrop-filter: blur(clamp(15px, 4vw, 20px));
+  backdrop-filter: blur(var(--blur-lg));
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 clamp(1rem, 3vw, 1.25rem) clamp(2.5rem, 7vw, 3.125rem) rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-xl);
 }
 
 .puntos-coming-soon-icon {
-  width: clamp(5rem, 18vw, 6.25rem);
-  height: clamp(5rem, 18vw, 6.25rem);
-  min-width: clamp(5rem, 18vw, 6.25rem);
-  min-height: clamp(5rem, 18vw, 6.25rem);
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
   background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(255, 193, 7, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
   animation: pulse-icon 2s ease-in-out infinite;
 }
 
 .puntos-coming-soon-icon ion-icon {
-  font-size: clamp(2.5rem, 10vw, 3.125rem);
+  font-size: 40px;
   color: white;
 }
 
 @keyframes pulse-icon {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 clamp(0.5rem, 1.5vw, 0.625rem) clamp(1.5rem, 4.5vw, 1.875rem) rgba(255, 193, 7, 0.4);
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 clamp(0.75rem, 2vw, 0.9375rem) clamp(2rem, 6vw, 2.5rem) rgba(255, 193, 7, 0.6);
+    box-shadow: 0 12px 40px rgba(255, 193, 7, 0.6);
   }
 }
 
 .puntos-coming-soon-title {
-  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-size: 32px;
   font-weight: 800;
   color: #FFC107;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: clamp(0.1rem, 0.3vw, 0.15rem);
-  text-shadow: 0 clamp(0.1rem, 0.3vw, 0.125rem) clamp(0.5rem, 1.5vw, 0.625rem) rgba(255, 193, 7, 0.3);
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
 }
 
 .puntos-coming-soon-text {
@@ -598,4 +638,75 @@
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
   line-height: 1.6;
+}
+
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
+  .puntos-number {
+    font-size: 56px;
+  }
+
+  .puntos-coin-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .puntos-reward-image {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+  }
+
+  .puntos-coming-soon-icon {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+  }
+
+  .puntos-coming-soon-icon ion-icon {
+    font-size: 50px;
+  }
+
+  .puntos-coming-soon-title {
+    font-size: 40px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
+  .puntos-header {
+    padding: 56px var(--padding-lg) var(--padding-md);
+    padding-top: calc(56px + var(--safe-area-top));
+  }
+
+  .puntos-content {
+    padding: var(--padding-lg);
+    padding-bottom: calc(var(--tab-bar-height) + 100px);
+  }
+
+  .puntos-number {
+    font-size: 64px;
+  }
+
+  .puntos-rewards-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===========================================
+   REDUCE MOTION - Accessibility
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .puntos-coming-soon-icon {
+    animation: none;
+  }
 }

@@ -1,21 +1,35 @@
-/* ===== FONDO COMPARTIDO CON EFECTOS DE TRANSICIÓN ===== */
+/* =====================================================
+   SHARED BACKGROUND - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Fondo compartido entre todas las páginas de la app.
+   
+   NOTA: Evitamos 100vh puro que causa problemas en móviles.
+   Usamos 100dvh con fallbacks.
+   
+   ===================================================== */
 
+/* ===========================================
+   SHARED BACKGROUND CONTAINER
+   =========================================== */
 .shared-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
+  /* Evitar 100vh puro - usar múltiples fallbacks */
   height: 100%;
+  height: 100vh;
   height: 100dvh;
+  height: -webkit-fill-available;
   overflow: hidden;
   z-index: 1;
   background-color: #000000;
-  min-height: 100vh;
-  min-height: 100dvh;
 }
 
-/* ===== CAPA DE FONDO PRINCIPAL ===== */
-
+/* ===========================================
+   BACKGROUND LAYERS
+   =========================================== */
 .background-layer {
   position: absolute;
   top: 0;
@@ -28,6 +42,9 @@
   z-index: 1;
 }
 
+/* ===========================================
+   BACKGROUND IMAGE
+   =========================================== */
 .background-image {
   position: absolute;
   top: 0;
@@ -38,14 +55,18 @@
   background-size: cover;
   background-position: left center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  filter: blur(clamp(1px, 0.2vw, 1.5px));
+  /* Evitar background-attachment: fixed en móviles - causa problemas */
+  background-attachment: scroll;
+  filter: blur(1px);
   opacity: 0.95;
   transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
               opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: #0a0a0a;
 }
 
+/* ===========================================
+   BACKGROUND OVERLAY
+   =========================================== */
 .background-overlay {
   position: absolute;
   top: 0;
@@ -63,8 +84,9 @@
   z-index: 2;
 }
 
-/* ===== EFECTO DE DESENFOQUE AL DESLIZAR ===== */
-
+/* ===========================================
+   TRANSITION OVERLAY (blur effect on swipe)
+   =========================================== */
 .transition-overlay {
   position: absolute;
   top: 0;
@@ -81,19 +103,21 @@
 }
 
 .transition-overlay.active {
-  backdrop-filter: blur(clamp(10px, 2vw, 15px));
+  backdrop-filter: blur(var(--blur-md));
   opacity: 1;
 }
 
-/* ===== ANIMACIÓN DE DESENFOQUE EN EL FONDO ===== */
-
+/* ===========================================
+   TRANSITIONING STATE
+   =========================================== */
 .shared-background.transitioning .background-image {
-  filter: blur(clamp(6px, 1.5vw, 8px));
+  filter: blur(6px);
   opacity: 0.6;
 }
 
-/* ===== CONTENIDO DE LA APLICACIÓN ===== */
-
+/* ===========================================
+   APP CONTENT
+   =========================================== */
 .app-content {
   position: relative;
   z-index: 10;
@@ -102,8 +126,9 @@
   overflow: hidden;
 }
 
-/* ===== EFECTOS ESPECÍFICOS POR PÁGINA ===== */
-
+/* ===========================================
+   PAGE-SPECIFIC EFFECTS
+   =========================================== */
 .shared-background.page-eventos .background-image,
 .shared-background.page-default .background-image,
 .shared-background.page-mis-tickets .background-image,
@@ -111,12 +136,13 @@
 .shared-background.page-puntos .background-image,
 .shared-background.page-perfil .background-image {
   background-position: left center;
-  filter: blur(clamp(1px, 0.2vw, 1.5px));
+  filter: blur(1px);
   opacity: 0.95;
 }
 
-/* ===== ANIMACIONES ADICIONALES ===== */
-
+/* ===========================================
+   BACKGROUND SHIFT ANIMATION
+   =========================================== */
 @keyframes backgroundShift {
   0% {
     transform: scale(1);
@@ -124,7 +150,7 @@
   }
   50% {
     transform: scale(1.02);
-    filter: blur(clamp(3px, 0.8vw, 4px));
+    filter: blur(4px);
   }
   100% {
     transform: scale(1);
@@ -136,29 +162,33 @@
   animation: backgroundShift 0.6s ease-in-out;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-
-@media (max-width: 768px) {
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   Habilitar background-attachment: fixed en pantallas grandes
+   =========================================== */
+@media (min-width: 768px) {
   .background-image {
-    background-attachment: scroll;
-    background-position: left center;
+    background-attachment: fixed;
   }
   
   .transition-overlay.active {
-    backdrop-filter: blur(clamp(8px, 1.5vw, 10px));
+    backdrop-filter: blur(var(--blur));
   }
 }
 
-@media (max-width: 480px) {
+/* ===========================================
+   REDUCE MOTION - Accessibility
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .transition-overlay {
+    transition: none;
+  }
+  
   .background-image {
-    background-position: left center;
+    transition: none;
   }
   
   .shared-background.transitioning .background-image {
-    filter: blur(clamp(5px, 1.2vw, 6px));
-  }
-  
-  .transition-overlay.active {
-    backdrop-filter: blur(clamp(6px, 1vw, 8px));
+    animation: none;
   }
 }

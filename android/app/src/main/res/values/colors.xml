@@ -3,6 +3,9 @@
     <!-- Colores para el splash screen -->
     <color name="splash_background">#FFFFFF</color>
     <color name="splash_icon_background">#00000000</color>
+    
+    <!-- Color de fondo para adaptive icon -->
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>
 
 

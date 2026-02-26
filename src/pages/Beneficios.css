@@ -1,5 +1,18 @@
-/* ===== PÁGINA CON FONDO COMPARTIDO RESPONSIVE ===== */
+/* =====================================================
+   BENEFICIOS.CSS - MOBILE FIRST RESPONSIVE
+   =====================================================
+   
+   Breakpoints:
+   - Base: < 480px (mobile)
+   - sm: 480px (mobile grande)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop)
+   
+   ===================================================== */
 
+/* ===========================================
+   PAGE BASE
+   =========================================== */
 .page-with-shared-background {
   --background: transparent;
 }
@@ -19,7 +32,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: max(env(safe-area-inset-top), clamp(1rem, 3vw, 1.25rem));
+  height: var(--safe-area-top, 20px);
   background: #000000;
   z-index: 1001;
 }
@@ -27,12 +40,12 @@
 .header-toolbar {
   --background: rgba(0, 0, 0, 0.8);
   --color: white;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  backdrop-filter: blur(var(--blur));
   position: relative;
   z-index: 1002;
-  min-height: clamp(3rem, 9vw, 4.375rem);
-  max-height: clamp(3.5rem, 10vw, 4.375rem);
-  height: clamp(3.5rem, 10vw, 4.375rem);
+  min-height: 56px;
+  max-height: 70px;
+  height: 70px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
@@ -47,13 +60,20 @@
   margin: 0;
 }
 
+/* ===========================================
+   PAGE CONTENT
+   =========================================== */
 .page-content {
   --background: transparent;
   position: relative;
-  overflow: hidden;
-  padding-bottom: calc(var(--safe-area-bottom) + clamp(4rem, 15vw, 6.25rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: calc(var(--safe-area-bottom) + var(--tab-bar-height) + 16px);
 }
 
+/* ===========================================
+   BENEFICIOS CONTAINER
+   =========================================== */
 .beneficios-container {
   position: relative;
   z-index: 2;
@@ -61,9 +81,14 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-bottom: clamp(4rem, 15vw, 6.25rem);
+  padding-bottom: calc(var(--tab-bar-height) + 32px);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
 }
 
+/* ===========================================
+   BENEFICIOS HEADER
+   =========================================== */
 .beneficios-header {
   padding: var(--padding-lg) var(--padding-md) var(--padding-md);
   display: flex;
@@ -74,17 +99,17 @@
 }
 
 .beneficios-icon {
-  width: clamp(3rem, 10vw, 3.5rem);
-  height: clamp(3rem, 10vw, 3.5rem);
-  min-width: clamp(3rem, 10vw, 3.5rem);
-  min-height: clamp(3rem, 10vw, 3.5rem);
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   background: linear-gradient(135deg, #FFC107, #FF9800);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 clamp(0.2rem, 0.6vw, 0.25rem) clamp(0.8rem, 2.4vw, 1rem) rgba(255, 193, 7, 0.4);
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.4);
 }
 
 .beneficios-icon ion-icon {
@@ -110,6 +135,9 @@
   margin: 0;
 }
 
+/* ===========================================
+   BENEFICIOS CONTENT
+   =========================================== */
 .beneficios-content {
   flex: 1;
   padding: 0 var(--padding-md) var(--padding-md);
@@ -117,6 +145,9 @@
   box-sizing: border-box;
 }
 
+/* ===========================================
+   BENEFICIOS STATES (loading, error, empty)
+   =========================================== */
 .beneficios-loading,
 .beneficios-error,
 .beneficios-empty {
@@ -124,16 +155,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 10vw, 3.75rem) var(--padding);
+  padding: 48px var(--padding);
   gap: var(--spacing);
   width: 100%;
 }
 
 .beneficios-empty-icon {
-  font-size: clamp(3rem, 12vw, 4rem);
+  font-size: 48px;
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* ===========================================
+   BENEFICIOS LIST
+   =========================================== */
 .beneficios-list {
   display: flex;
   flex-direction: column;
@@ -141,13 +175,16 @@
   width: 100%;
 }
 
+/* ===========================================
+   BENEFICIO CARD
+   =========================================== */
 .beneficio-card {
   background: rgba(40, 40, 45, 0.95);
   border-radius: var(--radius);
   padding: var(--padding);
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(clamp(8px, 2vw, 10px));
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(var(--blur));
   border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
   box-sizing: border-box;
@@ -160,7 +197,7 @@
 .beneficio-card.expanded {
   background: rgba(50, 50, 55, 0.98);
   border-color: rgba(255, 193, 7, 0.3);
-  box-shadow: 0 clamp(0.4rem, 1.2vw, 0.5rem) clamp(1rem, 3vw, 1.5rem) rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 .beneficio-card-header {
@@ -204,7 +241,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(clamp(-0.25rem, -0.8vw, -0.3125rem));
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -212,6 +249,9 @@
   }
 }
 
+/* ===========================================
+   BENEFICIO CARD RIGHT
+   =========================================== */
 .beneficio-card-right {
   display: flex;
   flex-direction: column;
@@ -221,17 +261,17 @@
 }
 
 .beneficio-logo-wrapper {
-  width: clamp(3.5rem, 12vw, 4.375rem);
-  height: clamp(3.5rem, 12vw, 4.375rem);
-  min-width: clamp(3.5rem, 12vw, 4.375rem);
-  min-height: clamp(3.5rem, 12vw, 4.375rem);
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
   background: white;
   border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-sm);
-  box-shadow: 0 clamp(0.1rem, 0.3vw, 0.125rem) clamp(0.4rem, 1.2vw, 0.5rem) rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow);
 }
 
 .beneficio-logo {
@@ -245,7 +285,7 @@
 .beneficio-expand-icon {
   font-size: var(--icon);
   color: rgba(255, 255, 255, 0.5);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
   flex-shrink: 0;
 }
 
@@ -253,8 +293,49 @@
   color: #FFC107;
 }
 
-@media (max-width: 480px) {
+/* ===========================================
+   BREAKPOINT: sm (480px) - Móviles grandes
+   =========================================== */
+@media (min-width: 480px) {
+  .beneficios-icon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+
+  .beneficio-logo-wrapper {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    min-height: 70px;
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: md (768px) - Tablets
+   =========================================== */
+@media (min-width: 768px) {
   .beneficios-header {
-    padding: var(--padding-md) var(--padding) var(--padding);
+    padding: var(--padding-xl) var(--padding-lg) var(--padding-lg);
+  }
+
+  .beneficios-content {
+    padding: 0 var(--padding-lg) var(--padding-lg);
+  }
+
+  .beneficio-card {
+    padding: var(--padding-md);
+  }
+}
+
+/* ===========================================
+   BREAKPOINT: lg (1024px) - Desktop
+   =========================================== */
+@media (min-width: 1024px) {
+  .beneficios-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
   }
 }

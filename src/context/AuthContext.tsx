@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { apiFetch, type ApiError } from '../api/client';
+import { logger } from '../utils/logger';
 
 type UserProfile = {
   id: string;
@@ -114,21 +115,21 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const loadProfile = useCallback(
     async (storedSession: Session | null) => {
-      console.log('[AuthProvider] loadProfile iniciado', { hasSession: storedSession !== null });
+      logger.log('[AuthProvider] loadProfile iniciado', { hasSession: storedSession !== null });
       
       if (storedSession === null) {
-        console.log('[AuthProvider] No hay sesión guardada, inicializando sin sesión');
+        logger.log('[AuthProvider] No hay sesión guardada, inicializando sin sesión');
         setIsInitializing(false);
         return;
       }
 
       try {
-        console.log('[AuthProvider] Verificando sesión...', { type: storedSession.type });
+        logger.log('[AuthProvider] Verificando sesión...', { type: storedSession.type });
         
         // Timeout de 3 segundos para evitar que se quede colgado
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => {
-            console.warn('[AuthProvider] Timeout al verificar sesión');
+            logger.warn('[AuthProvider] Timeout al verificar sesión');
             reject(new Error('Timeout al verificar sesión'));
           }, 3000);
         });
@@ -142,7 +143,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             });
 
         const response = await Promise.race([fetchPromise, timeoutPromise]);
-        console.log('[AuthProvider] Sesión verificada exitosamente');
+        logger.log('[AuthProvider] Sesión verificada exitosamente');
 
         if (storedSession.type === 'admin') {
           const newSession: AdminSession = {
@@ -169,13 +170,13 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             persistSession(null);
           } else {
             // Otro error de API - limpiar sesión
-            console.warn('[AuthProvider] Error al verificar sesión:', error);
+            logger.warn('[AuthProvider] Error al verificar sesión:', error);
             setSession(null);
             persistSession(null);
           }
         } else {
           // Error de red, timeout, o error desconocido - limpiar sesión para permitir login
-          console.warn('[AuthProvider] No se pudo verificar la sesión (backend no disponible?):', error);
+          logger.warn('[AuthProvider] No se pudo verificar la sesión (backend no disponible?):', error);
           setSession(null);
           persistSession(null);
         }
@@ -187,15 +188,15 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log('[AuthProvider] useEffect ejecutado');
+    logger.log('[AuthProvider] useEffect ejecutado');
     
     if (typeof window === 'undefined') {
-      console.log('[AuthProvider] No hay window, inicializando sin sesión');
+      logger.log('[AuthProvider] No hay window, inicializando sin sesión');
       setIsInitializing(false);
       return;
     }
 
-    console.log('[AuthProvider] Cargando perfil...');
+    logger.log('[AuthProvider] Cargando perfil...');
     void loadProfile(session);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

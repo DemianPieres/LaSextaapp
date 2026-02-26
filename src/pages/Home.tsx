@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { getUnreadNotificationsCount, subscribeToNotifications } from '../api/notifications';
 import { scheduleLocalNotification } from '../utils/notifications';
+import { logger } from '../utils/logger';
 import './Home.css';
 
 const resolveErrorMessage = (error: unknown, fallback: string): string => {
@@ -156,7 +157,7 @@ const Home: React.FC = () => {
           const count = await getUnreadNotificationsCount(session.token);
           setUnreadCount(count);
         } catch (error) {
-          console.error('Error al cargar contador de notificaciones:', error);
+          logger.error('Error al cargar contador de notificaciones:', error);
         }
       };
       void loadUnreadCount();

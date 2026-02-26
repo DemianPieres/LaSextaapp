@@ -89,6 +89,7 @@ import {
 } from '../../api/rewards';
 import EventCard from '../../components/EventCard';
 import { useAuth } from '../../context/AuthContext';
+import { logger } from '../../utils/logger';
 import './AdminDashboard.css';
 
 type GenerateTicketState = {
@@ -341,7 +342,7 @@ const AdminDashboard: React.FC = () => {
       const data = await fetchAdminRewards(adminToken);
       setRewards(data || []);
     } catch (error: unknown) {
-      console.error('[admin] Error al cargar premios:', error);
+      logger.error('[admin] Error al cargar premios:', error);
       // No mostrar toast en el error inicial para no interrumpir la carga
       setRewards([]);
     } finally {
@@ -356,7 +357,7 @@ const AdminDashboard: React.FC = () => {
         const canAdd = await checkPointEligibility(adminToken, userId);
         setUserEligibility((prev) => ({ ...prev, [userId]: canAdd }));
       } catch (error) {
-        console.error('Error al verificar elegibilidad:', error);
+        logger.error('Error al verificar elegibilidad:', error);
       }
     },
     [adminToken]
@@ -434,7 +435,7 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     const eventSource = subscribeToEventStream(handleEventStreamMessage, () => {
-      console.warn('[admin] Conexión SSE de eventos interrumpida.');
+      logger.warn('[admin] Conexión SSE de eventos interrumpida.');
     });
 
     return () => {
@@ -718,7 +719,7 @@ const AdminDashboard: React.FC = () => {
       }
     } catch (error: any) {
       if (error.message !== 'User canceled' && error.message !== 'User cancelled') {
-        console.error('[admin] Error al escanear QR:', error);
+        logger.error('[admin] Error al escanear QR:', error);
         showToast('No se pudo utilizar la cámara. Ingresá el código manualmente.', 'danger');
       }
       setIsScanning(false);
